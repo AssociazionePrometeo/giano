@@ -1,3 +1,3 @@
-# giano
-Giano Access Manager 
-GPL v2 Project
+Giano Access Manager
+
+Please Read first the license!
