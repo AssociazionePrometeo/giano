@@ -11,7 +11,7 @@ include '../include/config.inc.php';
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
-    <title>OpenDoorman Manager</title>
+    <title>Giano Manager</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="../css/bootstrap.min.css" rel="stylesheet">
@@ -42,7 +42,7 @@ include '../include/config.inc.php';
                     <span class="icon-bar"></span>
                 </button>
 <a class="navbar-brand" href="/">
-    <span class="glyphicon glyphicon-home"></span> Doorkeeper
+    <span class="glyphicon glyphicon-home"></span> Giano
 </a>
 </div>
 <!-- Navbar links -->
@@ -87,8 +87,6 @@ include '../include/config.inc.php';
                 </ul>
 
 				</div>
-
-
         </div>
         <!-- /.navbar-collapse -->
     </div>

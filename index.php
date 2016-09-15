@@ -4,7 +4,7 @@ session_start();
 if (!isset($_SESSION["ID"]) ) {
  header('Location: login.php');
 }else{
-    include ("_header.php");
+  //  include ("_header.php");
     include ("_menu.php");
 ?>
 

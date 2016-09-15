@@ -5,19 +5,43 @@ $sql="SELECT user_level FROM users WHERE userid=".$_SESSION["ID"]."";
 $result = mysql_query($sql) or die (mysql_error());;
 $array = mysql_fetch_array($result);
 $userlevel=$array['user_level'];
-//$userlevel='0';
 mysql_close($sql);
 
 if ( !isset($_SESSION["ID"]) ) {
  header('Location: ../login.php');
 }elseif ($userlevel=='0'){
-    include ("../_header.php");
+
     include ("_menu.php");
 ?>
 
+    <script type="text/javascript">
+        $(window).load(function() {
+            $('#myModal').modal('show');
+        });
+    </script>
 
-            <!-- Content -->
-            <?
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+                </div>
+                <div class="modal-body">
+                    <?
+    echo $_SESSION['message'];
+    ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <?
 $a=$_GET['a'];
 switch($a)
 {
@@ -26,12 +50,68 @@ $u=$_GET['u'];
 switch($u)
 {
     case add:
+  ?>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Aggiungi Utente</h1>
+                    <form class="form-horizontal" action=?e=registerd>
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="inputEmail3" class="col-sm-2 control-label">Nome</label>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" id="inputEmail3" name="nome" placeholder="Nome">
+                                </div>
+                                <label for="inputEmail3" class="col-sm-1 control-label">Cognome</label>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" id="inputEmail3" name="cognome" placeholder="Cognome">
+                                </div>
+                                <label for="inputEmail3" class="col-sm-1 control-label">Username</label>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" id="inputEmail3" name="username" placeholder="Username">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="inputEmail3" class="col-sm-2 control-label">Password</label>
+                                <div class="col-sm-2">
+                                    <input type="Password" class="form-control" id="inputEmail3" name="password">
+                                </div>
+                                <label for="inputEmail3" class="col-sm-1 control-label">Riscrivi Password</label>
+                                <div class="col-sm-2">
+                                    <input type="password" class="form-control" id="inputEmail3" name="password2">
+                                </div>
+                                <label for="inputEmail3" class="col-sm-1 control-label">E-mail</label>
+                                <div class="col-sm-2">
+                                    <input type="email" class="form-control" id="inputEmail3" name="email" placeholder="name@example.com">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
+                                <label for="inputEmail3" class="col-sm-2 control-label">Data Scadenza</label>
+                                <div class="col-sm-2">
+                                    <input type="date" class="form-control" id="inputEmail3" name="end_date">
+                                </div>
+                                <label for="inputEmail3" class="col-sm-1 control-label">Info</label>
+                                <div class="col-sm-2">
+                                    <input type="text" class="form-control" id="inputEmail3" name="date" placeholder="Cognome">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-offset-2 col-sm-10">
+                                <button type="submit" class="btn btn-default disabled">Registra</button>
 
-       ?>
-        <form class="form-horizontal" action=?e=register>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-        </form>
-<?
+        <?
 break;
 case register:
 $Nome = $_POST['nome'];
@@ -39,6 +119,11 @@ $Cognome = $_POST['cognome'];
 $Indirizzo_email = $_POST['indirizzo_email'];
 $Nick = $_POST['nick'];
 $informazioni = $_POST['informazioni'];
+$end_date = $_POST['end_date'];
+$livello_utente = $_POST['livello_utente'];
+$password=$_POST['password'];
+$password2=$_POST['password2'];
+
 
 
 $Nome = stripslashes($Nome);
@@ -115,12 +200,12 @@ echo "La tua registrazione cliccando qui <a href='?e=activate&id=$userid&code=$d
 
 default:
 ?>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <h1 class="page-header">Gestione Utenti</h1>
-                            <table class="table table-striped">
-                                <thead>
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1 class="page-header">Gestione Utenti</h1>
+                        <table class="table table-striped">
+                            <thead>
                                 <tr>
                                     <th>UserID</th>
                                     <th>Username</th>
@@ -157,26 +242,26 @@ break;
 
     case log:
         ?>
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <h1 class="page-header">Storico LOG
-                                        <small>I tuoi log</small>
-                                    </h1>
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <h1 class="page-header">Storico LOG
+                                                <small>I tuoi log</small>
+                                            </h1>
 
-    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Utente</th>
-                                            <th>Cardcode</th>
-                                            <th>Risorsa</th>
-                                            <th>Data - Ora</th>
-                                        </tr>
-                                    </thead>
-                                    <?
+                                            <div class="container">
+                                                <div class="row">
+                                                    <div class="col-lg-12">
+                                                        <table class="table table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Utente</th>
+                                                                    <th>Cardcode</th>
+                                                                    <th>Risorsa</th>
+                                                                    <th>Data - Ora</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <?
 $sql = "SELECT * FROM log";
 $result = mysql_query($sql);
 while ($array = mysql_fetch_array($result))
@@ -210,55 +295,55 @@ echo "</div></div></div>";
                                 ?>
 
 
-                                </div>
-                            </div>
-                        </div>
-                        <?
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <?
         break;
         default:
             ?>
-                        <div class="container">
+                                                <div class="container">
 
 
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <h1 class="page-header">Sezione amministrazione
-                                     </h1>
-                                  </div>
-                            </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-12">
+                                                            <h1 class="page-header">Sezione amministrazione
+                                                            </h1>
+                                                        </div>
+                                                    </div>
 
 
-                        </div>
-                        <?
+                                                </div>
+                                                <?
 
 
 }
 
             ?>
 
-                            <!-- /.container -->
+                                                    <!-- /.container -->
 
-                            <?
+                                                    <?
     include('../_footer.php');
     ?>
-    </body>
+                                                        </body>
 
-    </html>
+                                                        </html>
 
 
-    <?
+                                                        <?
 }else {
 header('Location: ../index.php');
 };
 ?>
-                                      <!-- jQuery -->
-                            <script src="../js/jquery-1.11.3.min.js"></script>
+                                                            <!-- jQuery -->
+                                                            <script src="../js/jquery-1.11.3.min.js"></script>
 
-                            <!-- Bootstrap Core JavaScript -->
-                            <script src="../js/bootstrap.min.js"></script>
+                                                            <!-- Bootstrap Core JavaScript -->
+                                                            <script src="../js/bootstrap.min.js"></script>
 
-                            <!-- IE10 viewport bug workaround -->
-                            <script src="../js/ie10-viewport-bug-workaround.js"></script>
+                                                            <!-- IE10 viewport bug workaround -->
+                                                            <script src="../js/ie10-viewport-bug-workaround.js"></script>
 
-                            <!-- Placeholder Images -->
-                            <script src="../js/holder.min.js"></script>
+                                                            <!-- Placeholder Images -->
+                                                            <script src="../js/holder.min.js"></script>
