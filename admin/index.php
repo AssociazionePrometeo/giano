@@ -51,6 +51,7 @@ if ( !isset($_SESSION["ID"]) ) {
 $a=$_GET['a'];
 switch($a)
 {
+var_dump($a);
 case users:
 $u=$_GET['u'];
 switch($u)
@@ -210,7 +211,7 @@ default:
 ?>
                 <div class="container">
                     <div class="row">
-                        <div class="col-lg-12">
+                        <div class="table-responsive col-lg-12">
                             <h1 class="page-header">Gestione Utenti</h1>
                             <table class="table table-striped">
                                 <thead>
@@ -259,7 +260,7 @@ break;
 
                                                 <div class="container">
                                                     <div class="row">
-                                                        <div class="col-lg-12">
+                                                        <div class="table-responsive col-lg-12">
                                                             <table class="table table-striped">
                                                                 <thead>
                                                                     <tr>
