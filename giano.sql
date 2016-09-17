@@ -20,6 +20,10 @@ SET time_zone = "+00:00";
 -- Database: `giano`
 --
 
+drop database if exists giano ; 
+create database if not exists giano;
+use giano;
+
 -- --------------------------------------------------------
 
 --
@@ -51,7 +55,8 @@ CREATE TABLE IF NOT EXISTS `log` (
   `id` int(25) NOT NULL,
   `userid` int(225) NOT NULL,
   `cardcode` text NOT NULL,
-  `date_log` datetime NOT NULL
+  `date_log` datetime NOT NULL,
+  `device` int(25) NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 
 --
@@ -85,7 +90,8 @@ CREATE TABLE IF NOT EXISTS `system` (
 CREATE TABLE IF NOT EXISTS `tags` (
   `id` int(25) NOT NULL,
   `cardcode` text NOT NULL,
-  `userid` int(255) NOT NULL
+  `userid` int(255) NOT NULL,
+  `status` int(255) NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
