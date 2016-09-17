@@ -6,7 +6,6 @@ $result = mysql_query($sql) or die (mysql_error());;
 $array = mysql_fetch_array($result);
 $userlevel=$array['user_level'];
 mysql_close($sql);
-
 if ( !isset($_SESSION["ID"]) ) {
  header('Location: ../index.php');
 }elseif ($userlevel=='0'){
@@ -47,13 +46,17 @@ if ( !isset($_SESSION["ID"]) ) {
         </script>
         <?
          unset($_SESSION["message"]);
+
                                     };
+global $debug;
+var_dump($debug);
 $a=$_GET['a'];
+if ($debug) var_dump($a);
 switch($a)
 {
-var_dump($a);
 case users:
 $u=$_GET['u'];
+if ($debug) var_dump($u);
 switch($u)
 {    case add:
   ?>
@@ -260,7 +263,7 @@ break;
 
                                                 <div class="container">
                                                     <div class="row">
-                                                        <div class="table-responsive col-lg-12">
+                                                        <div class="col-lg-12">
                                                             <table class="table table-striped">
                                                                 <thead>
                                                                     <tr>
