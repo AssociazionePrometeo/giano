@@ -40,7 +40,7 @@ if($login_check > 0){
         }
 
 } else {
-  $_SESSION["message"] = '<p class="bg-danger">email o password errata</p>';
+  $_SESSION["message"] = '<p class="bg-danger">username o password errata</p>';
    include 'index.php';
 }
 mysql_close($sql);
