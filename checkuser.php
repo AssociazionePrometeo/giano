@@ -1,14 +1,14 @@
 <?
 /* Check User Script */
-session_start();  // Start Session
+if (session_status() == PHP_SESSION_NONE) {session_start();}
 
-include 'include/config.inc.php';
+include 'function/database.php';
 // Convert to simple variables
 $username = $_POST['username'];
 $password = $_POST['password'];
 
 if((!$username) || (!$password)){
- $_SESSION["message"] = '<p class="bg-danger">compila entrambi i campi! </p>';
+ $_SESSION["message"] = '<p class="bg-danger">Compila entrambi i campi! </p>';
 include 'index.php';
        exit();
 }
@@ -16,33 +16,30 @@ include 'index.php';
 // Convert password to md5
 $password = md5($password);
 
-// check if the user info validates the db
-$sql = mysql_query("SELECT * FROM users WHERE username='$username' AND password='$password'");
-$login_check = mysql_num_rows($sql);
-$sql2 = mysql_query("UPDATE users SET last_login=now() WHERE username='$username' AND password='$password' AND activated='1'");
+$pdo = Database::connect();
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$login_check = $pdo->prepare("SELECT * FROM users WHERE username= :username AND password= :password and activated = 1 and end_date > now()");
+$login_check->bindParam(':username', $username); 
+$login_check->bindParam(':password', $password); 
+$login_check->execute();
+$login_check = $login_check->fetch(PDO::FETCH_ASSOC);
 
-if($login_check > 0){
-
-        while($row = mysql_fetch_array($sql)){
-        foreach( $row AS $key => $val ){
-                $$key = stripslashes( $val );
-        }
-                if($activated == 1){
-                // Register some session variables! */
-                $_SESSION["ID"] = $userid;
-                $_SESSION['user_level'] = $user_level;
-                header("Location: index.php");
-                }else{
-                    $_SESSION["message"] = '<p class="bg-danger">La tua utenza è stata disattivata</p>';
-                    include 'index.php';
-                     }
-
-        }
-
-} else {
-  $_SESSION["message"] = '<p class="bg-danger">username o password errata</p>';
-   include 'index.php';
+if($login_check) {
+    if ($login_check['activated']) {
+        $sql = $pdo->prepare("UPDATE `users` SET last_login = NOW() WHERE userid= :userid");
+        $sql->bindParam(':userid', $login_check['userid']); 
+        $sql->execute();
+        // Register some session variables! */
+        $_SESSION["ID"] = $login_check['userid'];
+        $_SESSION["first_name"] = $login_check['first_name'];
+        $_SESSION["email"] = $login_check['email_address'];
+        $_SESSION["username"] = $login_check['username'];
+        $_SESSION['user_level'] = $login_check['user_level'];
+        header("Location: index.php");
+    }
+} 
+else {
+    $_SESSION["message"] = '<p class="bg-danger">Username / Password errata</p>';
+    header("Location: index.php");
 }
-mysql_close($sql);
-mysql_close($sql2);
 ?>
