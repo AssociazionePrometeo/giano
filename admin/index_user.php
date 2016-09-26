@@ -1,8 +1,8 @@
 <?php
 session_start();
-
 if ( !isset($_SESSION["ID"]) ) {
     header('Location: ../login.php');
+    exit;
 }
 
 include '_header.php';
@@ -38,7 +38,7 @@ include '_menu.php';
                     echo '<tr>';
                     echo '<td>#' .$row['userid']. '</td>';
                     echo '<td>'. $row['first_name'] . '</td>';
-                    echo '<td>'. $row['last_name'] . '</td>';
+                    echo '<td>'. $row['info'] . '</td>';
                     echo '<td>'. $row['email_address'] . '</td>';
                     echo '<td><a class="btn btn-success" href="update_user.php?id='.$row['userid'].'">Update</a>';
                     echo ' ';

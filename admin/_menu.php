@@ -1,9 +1,14 @@
 <?php
 
-if ( !isset($_SESSION) || !isset($_SESSION["ID"]) ) {
+if ( !isset($_SESSION["ID"] ) ) {
     header('Location: ../login.php');
+    exit;
 }
-
+if ($_SESSION['user_level'] > 3) {
+    session_destroy();
+    header('Location: ../login.php');
+    exit;
+}
 ?>
 
 <!-- Navigation -->
