@@ -23,7 +23,7 @@ if ( !isset($_SESSION["ID"] ) ) {
 <!-- Navbar links -->
         <div class="collapse navbar-collapse" id="navbar">
             <ul class="nav navbar-nav">
-                        <li class="active"><a href="index.php?a=tag">Gestione TAG</a></li>
+                        <li class="active"><a href="user_tag.php">Gestione TAG</a></li>
                         <li><a href="index.php?a=log">Log</a></li>
             </ul>
     <!-- Menu right -->
