@@ -41,7 +41,7 @@ include '_menu.php';
         }
          
         if (empty($userid)) {
-            $useridError = 'Please enter UserID';
+            $useridError = 'Please select User';
             $valid = false;
         }
          
@@ -79,8 +79,7 @@ include '_menu.php';
                     <div class="row">
                         <h3>Update Tag</h3>
                     </div>
-             
-                    <form class="form-horizontal" action="update_tag.php?id=<?php echo $id?>" method="post">
+                     <form class="form-horizontal" action="update_tag.php?id=<?php echo $id?>" method="post">
                       <div class="control-group <?php echo !empty($cardcodeError)?'error':'';?>">
                         <label class="control-label">Card Code</label>
                         <div class="controls">
@@ -91,21 +90,45 @@ include '_menu.php';
                         </div>
                       </div>
                       <div class="control-group <?php echo !empty($useridError)?'error':'';?>">
-                        <label class="control-label">UserID</label>
-                        <div class="controls">
-                            <input name="userid" type="text"  placeholder="userid" value="<?php echo !empty($userid)?$userid:'';?>">
+                        <label class="control-label">User</label>
+                       <div class="controls">
+                            <select class="selectpicker" placeholder="userid" name="userid" data-width="auto">
+                                <?php
+                                 $pdo = Database::connect();
+           $sql = 'SELECT first_name, userid FROM users';
+           foreach ($pdo->query($sql) as $row) 
+           {
+            if ($userid == $row['userid']){
+            echo'<option value='.$row['userid']. ' selected>'.$row['first_name'].'</option>';    
+            }else{
+            echo'<option value='.$row['userid'].'>'.$row['first_name'].'</option>';
+            }
+           }
+            Database::disconnect();
+                                ?>
                             <?php if (!empty($useridError)): ?>
                                 <span class="help-inline"><?php echo $useridError;?></span>
                             <?php endif;?>
-                        </div>
+                            </select>
+                          </div>
                       </div>
                       <div class="control-group <?php echo !empty($statusError)?'error':'';?>">
                         <label class="control-label">Status</label>
                         <div class="controls">
-                            <input name="status" type="text"  placeholder="Status" value="<?php echo !empty($status)?$status:'';?>">
+                           <select class="selectpicker" placeholder="status" name="status" data-width="auto">
+                               <?php
+                               if ($status == 1){
+                                echo'<option value="1" selected>Abilitato</option>';
+                                echo'<option value="0">Disabilitato</option>';
+                               }else{
+                                echo'<option value="1">Abilitato</option>';
+                                echo'<option value="0" selected>Disabilitato</option>';
+                               }
+                               ?>
                             <?php if (!empty($statusError)): ?>
                                 <span class="help-inline"><?php echo $statusError;?></span>
                             <?php endif;?>
+                               </select>
                         </div>
                       </div>
                       <div class="form-actions">

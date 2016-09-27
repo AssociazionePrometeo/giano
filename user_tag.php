@@ -2,7 +2,7 @@
 session_start();
 
 if ( !isset($_SESSION["ID"]) ) {
-    header('Location: ../login.php');
+    header('Location: login.php');
 }
 
 include '_header.php';
@@ -43,8 +43,6 @@ include '_menu.php';
                     echo '<td>Disattivato</td>';
                     echo '<td><p class="bg-danger">Il TAG disattivato può essere riattivato solo da un amministratore</p></td>';
                 }
-
-
                     echo '</tr>';
            }
            Database::disconnect();
