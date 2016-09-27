@@ -34,8 +34,7 @@ include '_menu.php';
            foreach ($pdo->query($sql) as $row) {
                     echo '<tr>';
                     echo '<td>#' .$row['id']. '</td>';
-                    echo '<td>'. $row['cardcode'] . '</td>';
-                    //echo '<td>'. $row['userid'] . '</td>';
+                    echo '<td>' .$row['cardcode']. '</td>';
                 if ($row['status'] == 1){
                   echo '<td>Attivato</td>';
                   echo '<td><a class="btn btn-danger" href="disable_tag.php?id='.$row['id'].'">Disattiva!</a></td>';
