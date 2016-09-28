@@ -23,9 +23,15 @@ include '_menu.php';
           <thead>
             <tr>
               <th>ID #</th>
-              <th>First Name</th>
-              <th>Last Name</th>
+              <th>Name</th>
+              <th>Info</th>
+              <th>Username</th>
               <th>Email Address</th>
+              <th>Level</th>
+              <th>Numero Telefono</th>
+              <th>Data Iscrizione</th>
+              <th>Data Scadenza</th>
+              <th>Ultimo accesso (WEB)</th>
               <th>Action</th>    
             </tr>
           </thead>
@@ -39,7 +45,20 @@ include '_menu.php';
                     echo '<td>#' .$row['userid']. '</td>';
                     echo '<td>'. $row['first_name'] . '</td>';
                     echo '<td>'. $row['info'] . '</td>';
+                    echo '<td>'. $row['username'] . '</td>';
                     echo '<td>'. $row['email_address'] . '</td>';
+                    $pdo = Database::connect();
+                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                    $sql2 = 'SELECT name FROM permissions WHERE id=?';
+                    $q = $pdo->prepare($sql2);
+                    $q->execute(array($row['user_level']));
+                    $data = $q->fetch(PDO::FETCH_ASSOC);
+                    echo '<td>'.$data['name'].'</td>';
+                    Database::disconnect();
+                    echo '<td>'. $row['mobile_number'] . '</td>';
+                    echo '<td>'. $row['signup_date'] . '</td>';
+                    echo '<td>'. $row['end_date'] . '</td>';
+                    echo '<td>'. $row['last_login'] . '</td>';
                     echo '<td><a class="btn btn-success" href="update_user.php?id='.$row['userid'].'">Update</a>';
                     echo ' ';
                     echo '<a class="btn btn-danger" href="delete_user.php?id='.$row['userid'].'">Delete</a></td>';
