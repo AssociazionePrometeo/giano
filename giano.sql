@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Creato il: Set 28, 2016 alle 23:27
+-- Creato il: Set 29, 2016 alle 20:47
 -- Versione del server: 10.1.16-MariaDB
 -- Versione PHP: 5.6.24
 
@@ -19,6 +19,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `giano`
 --
+CREATE DATABASE IF NOT EXISTS `giano` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `giano`;
 
 -- --------------------------------------------------------
 
