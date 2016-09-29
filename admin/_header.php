@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<!-- Template by Quackit.com -->
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -12,5 +10,4 @@
     <script src="../js/jquery-1.11.3.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
 </head>
-
 <body>

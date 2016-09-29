@@ -1,16 +1,12 @@
 <?php
 session_start();
-
 if ( !isset($_SESSION["ID"]) ) {
     header('Location: ../login.php');
 }
-
-include '_header.php';
+//include '_header.php';
 include '_menu.php';
-
+//include '../function/database.php';
 ?>
-
-
     <div class="container">
         <div class="row">
             <h3>Gestione Tag</h3>
@@ -32,7 +28,6 @@ include '_menu.php';
                 </thead>
                 <tbody>
                     <?php
-           include '../function/database.php';
            $pdo = Database::connect();
            $sql = 'SELECT * FROM tags ORDER BY id DESC';
            foreach ($pdo->query($sql) as $row) {
@@ -48,9 +43,9 @@ include '_menu.php';
             echo '<td>'.$data['first_name'].'</td>';
             Database::disconnect();
                if ($row['status'] == 1){
-                    echo '<td>Attivato</td>';
+                    echo '<td>Abilitato</td>';
                }else{
-                   echo '<td>Attivato</td>';
+                   echo '<td>Disabilitato</td>';
                }
                     echo '<td><a class="btn btn-success" href="update_tag.php?id='.$row['id'].'">Update</a>';
                     echo ' ';

@@ -5,14 +5,24 @@ if ( !isset($_SESSION["ID"]) ) {
     header('Location: ../login.php');
 }
 
-include '_header.php';
+//include '_header.php';
 include '_menu.php';
+//require '../function/database.php';
+$valid = null;
+$pdo = Database::connect();
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$sql = 'SELECT insert_devices FROM permissions WHERE id=?';
+$q = $pdo->prepare($sql);
+$q->execute(array($_SESSION['user_level']));
+$data = $q->fetch(PDO::FETCH_ASSOC);
+if($data['insert_devices'] == 1){
+    $valid = true;
+}else{
+    header('Location: index.php');
+}
+Database::disconnect();
 
-?>
-
-<?php
-     
-    require '../function/database.php';
+if($valid){
  
      if ( !empty($_POST)) {
         // keep track validation errors
@@ -91,7 +101,7 @@ include '_menu.php';
                       </div>
                       <div class="form-actions">
                           <button type="submit" class="btn btn-success">Create</button>
-                          <a class="btn" href="index_device.php">Back</a>
+                          <a class="btn" href="list_device.php">Back</a>
                         </div>
                     </form>
                 </div>
@@ -100,4 +110,5 @@ include '_menu.php';
 
 <?php
     include('_footer.php');
+}
 ?>

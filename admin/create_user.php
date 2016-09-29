@@ -5,14 +5,25 @@ if ( !isset($_SESSION["ID"]) ) {
     header('Location: ../login.php');
 }
 
-include '_header.php';
+//include '_header.php';
 include '_menu.php';
+// require '../function/database.php';
 
-?>
+$valid = null;
+$pdo = Database::connect();
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$sql = 'SELECT insert_users FROM permissions WHERE id=?';
+$q = $pdo->prepare($sql);
+$q->execute(array($_SESSION['user_level']));
+$data = $q->fetch(PDO::FETCH_ASSOC);
+if($data['insert_users'] == 1){
+    $valid = true;
+}else{
+    header('Location: index.php');
+}
+Database::disconnect();
 
-<?php
-    require '../function/database.php';
-
+if($valid){
     if ( !empty($_POST)) {
         // keep track validation errors
         $nameError = null;
@@ -167,8 +178,8 @@ include '_menu.php';
                             </div>
                       </div>
                       <div class="form-actions">
-                          <button type="submit" class="btn btn-success">Update</button>
-                          <a class="btn" href="index_user.php">Back</a>
+                          <button type="submit" class="btn btn-success">Create</button>
+                          <a class="btn" href="list_user.php">Back</a>
                         </div>
                     </form>
                 </div>
@@ -177,4 +188,5 @@ include '_menu.php';
 
 <?php
     include('_footer.php');
+}
 ?>

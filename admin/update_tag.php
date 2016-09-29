@@ -1,32 +1,43 @@
 <?php
 session_start();
-
 if ( !isset($_SESSION["ID"]) ) {
     header('Location: ../login.php');
+    exit;
 }
 
-include '_header.php';
 include '_menu.php';
+//require '../function/database.php';
 
-?>
+$valid = null;
+$pdo = Database::connect();
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$sql = 'SELECT insert_tags FROM permissions WHERE id=?';
+$q = $pdo->prepare($sql);
+$q->execute(array($_SESSION['user_level']));
+$data = $q->fetch(PDO::FETCH_ASSOC);
+if($data['insert_tags'] == 1){
+    $valid = true;
+}else{
+    header('Location: index.php');
+}
+Database::disconnect();
 
-<?php
-    require '../function/database.php';
- 
+if($valid){
     $id = null;
     if ( !empty($_GET['id'])) {
         $id = $_REQUEST['id'];
     }
      
     if ( null==$id ) {
-        header("Location: index.php");
+        header('Location: list_tag.php');
+        exit;
     }
      
     if ( !empty($_POST)) {
         // keep track validation errors
         $cardcodeError = null;
         $useridError = null;
-        $statusError = null;
+
          
         // keep track post values
         $cardcode = $_POST['cardcode'];
@@ -44,12 +55,7 @@ include '_menu.php';
             $useridError = 'Please select User';
             $valid = false;
         }
-         
-        if (empty($status)) {
-            $statusError = 'Please enter Status';
-            $valid = false;
-        }
-         
+
         // update data
         if ($valid) {
             $pdo = Database::connect();
@@ -58,7 +64,7 @@ include '_menu.php';
             $q = $pdo->prepare($sql);
             $q->execute(array($cardcode,$userid,$status,$id));
             Database::disconnect();
-            header("Location: index_tag.php");
+            header('Location: list_tag.php');
         }
     } else {
         $pdo = Database::connect();
@@ -125,15 +131,12 @@ include '_menu.php';
                                 echo'<option value="0" selected>Disabilitato</option>';
                                }
                                ?>
-                            <?php if (!empty($statusError)): ?>
-                                <span class="help-inline"><?php echo $statusError;?></span>
-                            <?php endif;?>
-                               </select>
-                        </div>
+                              </select>
+                              </div>
                       </div>
                       <div class="form-actions">
                           <button type="submit" class="btn btn-success">Update</button>
-                          <a class="btn" href="index_tag.php">Back</a>
+                          <a class="btn" href="list_tag.php">Back</a>
                         </div>
                     </form>
                 </div>
@@ -142,4 +145,5 @@ include '_menu.php';
 
 <?php
     include('_footer.php');
+}
 ?>

@@ -5,9 +5,9 @@ if ( !isset($_SESSION["ID"]) ) {
     header('Location: ../login.php');
 }
 
-include '_header.php';
+//include '_header.php';
 include '_menu.php';
-
+//include '../function/database.php';
 ?>
 
 
@@ -27,12 +27,11 @@ include '_menu.php';
               <th>Name</th>
               <th>Active</th>
               <th>Type</th>
-              <th>Action</th>    
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
           <?php
-           include '../function/database.php';
            $pdo = Database::connect();
            $sql = 'SELECT * FROM devices ORDER BY id DESC';
            foreach ($pdo->query($sql) as $row) {

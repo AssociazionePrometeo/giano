@@ -10,12 +10,7 @@ if ( !isset($_SESSION["ID"] ) ) {
     <div class="container">
         <!-- Logo and responsive toggle -->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
-                    <span class="sr-only"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-            </button>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false"></button>
             <a class="navbar-brand" href="/">
                 <span class="glyphicon glyphicon-home"></span> Giano
             </a>

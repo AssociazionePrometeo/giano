@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Creato il: Set 29, 2016 alle 20:47
+-- Creato il: Set 30, 2016 alle 00:31
 -- Versione del server: 10.1.16-MariaDB
 -- Versione PHP: 5.6.24
 
@@ -66,24 +66,25 @@ CREATE TABLE `log` (
 CREATE TABLE `permissions` (
   `id` int(11) NOT NULL,
   `name` varchar(45) NOT NULL,
-  `insert_devices` tinyint(4) NOT NULL DEFAULT '0',
-  `insert_tags` tinyint(4) NOT NULL DEFAULT '0',
-  `insert_users` tinyint(4) NOT NULL DEFAULT '0',
-  `delete_devices` tinyint(4) NOT NULL DEFAULT '0',
-  `delete_tags` tinyint(4) NOT NULL DEFAULT '0',
-  `delete_users` tinyint(4) NOT NULL DEFAULT '0',
-  `insert_reservation` tinyint(4) NOT NULL DEFAULT '0',
-  `delete_reservation` tinyint(4) NOT NULL DEFAULT '0'
+  `permissions` enum('0','1') NOT NULL DEFAULT '0',
+  `insert_devices` enum('0','1') NOT NULL DEFAULT '0',
+  `insert_tags` enum('0','1') NOT NULL DEFAULT '0',
+  `insert_users` enum('0','1') NOT NULL DEFAULT '0',
+  `delete_devices` enum('0','1') NOT NULL DEFAULT '0',
+  `delete_tags` enum('0','1') NOT NULL DEFAULT '0',
+  `delete_users` enum('0','1') NOT NULL DEFAULT '0',
+  `insert_reservation` enum('0','1') NOT NULL DEFAULT '0',
+  `delete_reservation` enum('0','1') NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dump dei dati per la tabella `permissions`
 --
 
-INSERT INTO `permissions` (`id`, `name`, `insert_devices`, `insert_tags`, `insert_users`, `delete_devices`, `delete_tags`, `delete_users`, `insert_reservation`, `delete_reservation`) VALUES
-(1, 'administration', 1, 1, 1, 1, 1, 1, 1, 1),
-(2, 'manager', 1, 1, 1, 0, 0, 0, 1, 1),
-(3, 'user', 0, 0, 0, 0, 0, 0, 1, 1);
+INSERT INTO `permissions` (`id`, `name`, `permissions`, `insert_devices`, `insert_tags`, `insert_users`, `delete_devices`, `delete_tags`, `delete_users`, `insert_reservation`, `delete_reservation`) VALUES
+(1, 'admin', '1', '1', '1', '1', '1', '1', '1', '1', '1'),
+(2, 'manager', '0', '1', '1', '1', '0', '0', '0', '1', '1'),
+(3, 'user', '0', '0', '0', '0', '0', '0', '0', '1', '1');
 
 -- --------------------------------------------------------
 
@@ -95,8 +96,8 @@ CREATE TABLE `reservation` (
   `id` int(11) NOT NULL,
   `deviceid` int(11) NOT NULL,
   `userid` int(11) NOT NULL,
-  `from_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `to_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `from_time` timestamp NULL DEFAULT NULL,
+  `to_time` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -131,7 +132,8 @@ CREATE TABLE `tags` (
 INSERT INTO `tags` (`id`, `cardcode`, `userid`, `status`) VALUES
 (1, '112314', 1, 1),
 (2, '4324', 3, 1),
-(3, '47beet', 2, 1);
+(3, '47beet', 2, 1),
+(4, '47beeb', 1, 0);
 
 -- --------------------------------------------------------
 
@@ -197,10 +199,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`userid`, `first_name`, `email_address`, `username`, `PASSWORD`, `info`, `user_level`, `mobile_number`, `signup_date`, `end_date`, `last_login`, `activated`) VALUES
-(1, 'admin', 'admin@fb7.it', 'admin_u', '6e6bc4e49dd477ebc98ef4046c067b5f', 'Fablab', 1, '+393336666666', '2016-09-26 23:43:28', '2016-09-30', '2016-09-28 19:00:25', 1),
-(2, 'manager', 'manager@fb7.it', 'manager_u', '6e6bc4e49dd477ebc98ef4046c067b5f', 'Fablab', 2, '+393354444444', '2016-09-26 23:43:28', '2016-09-30', '2016-09-26 23:43:28', 1),
-(3, 'user', 'user@fb7.it', 'user_u', '6e6bc4e49dd477ebc98ef4046c067b5f', 'Fablab', 3, '+393489999999', '2016-09-26 23:43:28', '2016-09-30', '2016-09-26 23:43:28', 0),
-(4, 'utente1', 'ut@ente.it', 'utente1_u', '', 'utente_add', 2, '+393476666666', '2016-09-28 21:24:28', '2016-12-31', '2016-09-28 21:24:28', 0);
+(1, 'admin', 'admin@fb7.it', 'admin', '6e6bc4e49dd477ebc98ef4046c067b5f', 'Fablab', 1, '+393336666666', '2016-09-26 23:43:28', '2016-10-31', '2016-09-29 19:54:07', 1),
+(2, 'manager', 'manager@fb7.it', 'manager', '6e6bc4e49dd477ebc98ef4046c067b5f', 'Fablab', 2, '+393354444444', '2016-09-26 23:43:28', '2016-09-30', '2016-09-26 23:43:28', 1),
+(3, 'user', 'user@fb7.it', 'user', '6e6bc4e49dd477ebc98ef4046c067b5f', 'Fablab', 3, '+393489999999', '2016-09-26 23:43:28', '2016-09-30', '2016-09-29 19:22:25', 1),
+(4, 'utente1', 'ut@ente.it', 'utente1', '', 'utente_add', 2, '+393476666666', '2016-09-28 21:24:28', '2016-12-31', '2016-09-28 21:24:28', 0);
 
 --
 -- Indici per le tabelle scaricate
@@ -282,7 +284,7 @@ ALTER TABLE `reservation`
 -- AUTO_INCREMENT per la tabella `tags`
 --
 ALTER TABLE `tags`
-  MODIFY `id` int(25) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(25) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT per la tabella `type_device`
 --

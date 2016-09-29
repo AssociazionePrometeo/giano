@@ -5,20 +5,29 @@ if ( !isset($_SESSION["ID"]) ) {
     header('Location: ../login.php');
 }
 
-include '_header.php';
+//include '_header.php';
 include '_menu.php';
+//require '../function/database.php';
+$valid = null;
+$pdo = Database::connect();
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$sql = 'SELECT insert_tags FROM permissions WHERE id=?';
+$q = $pdo->prepare($sql);
+$q->execute(array($_SESSION['user_level']));
+$data = $q->fetch(PDO::FETCH_ASSOC);
+if($data['insert_tags'] == 1){
+    $valid = true;
+}else{
+    header('Location: index.php');
+}
+Database::disconnect();
 
-?>
-
-<?php
-     
-    require '../function/database.php';
- 
+if($valid){
      if ( !empty($_POST)) {
         // keep track validation errors
         $cardcodeError = null;
         $useridError = null;
-        $statusError = null;
+
          
         // keep track post values
         $cardcode = $_POST['cardcode'];
@@ -36,12 +45,7 @@ include '_menu.php';
             $useridError = 'Please enter UserID';
             $valid = false;
         }
-         
-        if (empty($status)) {
-            $statusError = 'Please enter Status';
-            $valid = false;
-        }
-         
+
         // insert data
         if ($valid) {
             $pdo = Database::connect();
@@ -54,50 +58,66 @@ include '_menu.php';
         }
     }
 ?>
-    <div class="container">
+   <div class="container">
      
                 <div class="span10 offset1">
                     <div class="row">
-                        <h3>Crea Tag</h3>
+                        <h3>Create Tag</h3>
                     </div>
-             
-                    <form class="form-horizontal" action="create_tag.php" method="post">
+                     <form class="form-horizontal" action="create_tag.php" method="post">
                       <div class="control-group <?php echo !empty($cardcodeError)?'error':'';?>">
                         <label class="control-label">Card Code</label>
                         <div class="controls">
-                            <input name="cardcode" type="text"  placeholder="Card Code" value="<?php echo !empty($cardcode)?$cardcode:'';?>">
+                            <input name="cardcode" type="text" placeholder="Card Code" value="<?php echo !empty($cardcode)?$cardcode:'';?>">
                             <?php if (!empty($cardcodeError)): ?>
                                 <span class="help-inline"><?php echo $cardcodeError;?></span>
-                            <?php endif; ?>
+                            <?php endif;?>
                         </div>
                       </div>
                       <div class="control-group <?php echo !empty($useridError)?'error':'';?>">
-                        <label class="control-label">User ID</label>
-                        <div class="controls">
-                            <input name="userid" type="text" placeholder="UserID" value="<?php echo !empty($userid)?$userid:'';?>">
+                        <label class="control-label">User</label>
+                       <div class="controls">
+                            <select class="selectpicker" placeholder="userid" name="userid" data-width="auto">
+                                <?php
+                                 $pdo = Database::connect();
+           $sql = 'SELECT first_name, userid FROM users';
+           foreach ($pdo->query($sql) as $row)
+           {
+            if ($userid == $row['userid']){
+            echo'<option value='.$row['userid']. ' selected>'.$row['first_name'].'</option>';
+            }else{
+            echo'<option value='.$row['userid'].'>'.$row['first_name'].'</option>';
+            }
+           }
+            Database::disconnect();
+                                ?>
                             <?php if (!empty($useridError)): ?>
                                 <span class="help-inline"><?php echo $useridError;?></span>
                             <?php endif;?>
-                        </div>
+                            </select>
+                          </div>
                       </div>
                       <div class="control-group <?php echo !empty($statusError)?'error':'';?>">
                         <label class="control-label">Status</label>
                         <div class="controls">
-                            <input name="status" type="text"  placeholder="Status" value="<?php echo !empty($status)?$status:'';?>">
-                            <?php if (!empty($statusError)): ?>
-                                <span class="help-inline"><?php echo $statusError;?></span>
-                            <?php endif;?>
+                           <select class="selectpicker" placeholder="status" name="status" data-width="auto">
+                               <?php
+                                echo'<option value="1">Abilitato</option>';
+                                echo'<option value="0" selected>Disabilitato</option>';
+                                ?>
+                            </select>
                         </div>
                       </div>
                       <div class="form-actions">
                           <button type="submit" class="btn btn-success">Create</button>
-                          <a class="btn" href="index_tag.php">Back</a>
+                          <a class="btn" href="list_tag.php">Back</a>
                         </div>
                     </form>
                 </div>
                  
-    </div> <!-- /container -->
+    </div>  <!-- /container -->
 
 <?php
     include('_footer.php');
+}
 ?>
