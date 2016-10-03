@@ -42,7 +42,7 @@ if($valid){
         $level = $_POST['level'];
         $mobile = $_POST['mobile'];
         $end_date = $_POST['end_date'];
-         
+
         // validate input
         $valid = true;
         if (empty($name)) {
@@ -93,17 +93,17 @@ if($valid){
             $q = $pdo->prepare($sql);
             $q->execute(array($name,$info,$username,$level,$email,$mobile,$end_date));
             Database::disconnect();
-            header("Location: index_user.php");
+            header("Location: list_user.php");
         }
     }
 ?>
 <div class="container">
-     
+
                 <div class="span10 offset1">
                     <div class="row">
                         <h3>Aggiungi Utente</h3>
                     </div>
-             
+
                     <form class="form-horizontal" action="create_user.php" method="post">
                       <div class="control-group <?php echo !empty($nameError)?'error':'';?>">
                         <label class="control-label">Name</label>
@@ -142,18 +142,35 @@ if($valid){
                             <?php endif;?>
                         </div>
                       </div>
-                        <div class="control-group <?php echo !empty($end_dateError)?'error':'';?>">
+                      <div class="control-group <?php echo !empty($end_dateError)?'error':'';?>">
                         <label class="control-label">Expiration Date</label>
                         <div class="controls">
-                            <input name="end_date" type="date"  placeholder="Expiration Date" value="<?php echo !empty($end_date)?$end_date:'';?>">
-                            <?php if (!empty($end_dateError)): ?>
-                                <span class="help-inline"><?php echo $end_dateError;?></span>
-                            <?php endif;?>
+                            <!--input id="datetimepicker" type="text" name="end_date"-->
+                          <div class="row">
+                            <div class="col-lg-6">
+                              <div class="input-group">
+                                <input id="_end_datetimepicker" class="form-control" type="text" name="end_date" value="<?php echo !empty($end_date)?$end_date:'';?>"/>
+                              </div>
+                            </div>
+                          </div>
+                          <script type="text/javascript">// <![CDATA[
+                          jQuery(function(){
+                          jQuery('#_end_datetimepicker').datetimepicker({
+                            format:'Y-m-d',
+                            timepicker: false,
+                            lang:'it'
+                          });
+                          jQuery('#image_button').click(function(){
+                            jQuery('#_end_datetimepicker').datetimepicker('show');
+                          });
+                          });
+                          // ]]>
+                          </script>
                         </div>
                       </div>
-                        <div class="control-group <?php echo !empty($levelError)?'error':'';?>">
+                      <div class="control-group <?php echo !empty($levelError)?'error':'';?>">
                         <label class="control-label">Level</label>
-                       <div class="controls">
+                        <div class="controls">
                             <select class="selectpicker" placeholder="level" name="level" data-width="auto">
                                 <option value=''></option>
                                 <?php
@@ -183,7 +200,7 @@ if($valid){
                         </div>
                     </form>
                 </div>
-                 
+
     </div><!-- /container -->
 
 <?php

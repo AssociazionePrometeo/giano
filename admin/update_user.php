@@ -28,11 +28,11 @@ if($valid){
     if ( !empty($_GET['id'])) {
         $id = $_REQUEST['id'];
     }
-     
+
     if ( null==$id ) {
         header("Location: index.php");
     }
-     
+
     if ( !empty($_POST)) {
         // keep track validation errors
         $nameError = null;
@@ -51,7 +51,7 @@ if($valid){
         $level = $_POST['level'];
         $mobile = $_POST['mobile'];
         $end_date = $_POST['end_date'];
-         
+
         // validate input
         $valid = true;
         if (empty($name)) {
@@ -122,12 +122,12 @@ if($valid){
     }
 ?>
 <div class="container">
-     
+
                 <div class="span10 offset1">
                     <div class="row">
                         <h3>Update Utente</h3>
                     </div>
-             
+
                     <form class="form-horizontal" action="update_user.php?id=<?php echo $id?>" method="post">
                       <div class="control-group <?php echo !empty($nameError)?'error':'';?>">
                         <label class="control-label">Name</label>
@@ -166,13 +166,30 @@ if($valid){
                             <?php endif;?>
                         </div>
                       </div>
-                        <div class="control-group <?php echo !empty($end_dateError)?'error':'';?>">
+                      <div class="control-group <?php echo !empty($end_dateError)?'error':'';?>">
                         <label class="control-label">Expiration Date</label>
                         <div class="controls">
-                            <input name="end_date" type="date"  placeholder="Expiration Date" value="<?php echo !empty($end_date)?$end_date:'';?>">
-                            <?php if (!empty($end_dateError)): ?>
-                                <span class="help-inline"><?php echo $end_dateError;?></span>
-                            <?php endif;?>
+                            <!--input id="datetimepicker" type="text" name="end_date"-->
+                          <div class="row">
+                            <div class="col-lg-6">
+                              <div class="input-group">
+                                <input id="_end_datetimepicker" class="form-control" type="text" name="end_date" value="<?php echo !empty($end_date)?$end_date:'';?>"/>
+                              </div>
+                            </div>
+                          </div>
+                          <script type="text/javascript">// <![CDATA[
+                          jQuery(function(){
+                          jQuery('#_end_datetimepicker').datetimepicker({
+                            format:'Y-m-d',
+                            timepicker: false,
+                            lang:'it'
+                          });
+                          jQuery('#image_button').click(function(){
+                            jQuery('#_end_datetimepicker').datetimepicker('show');
+                          });
+                          });
+                          // ]]>
+                          </script>
                         </div>
                       </div>
                         <div class="control-group <?php echo !empty($levelError)?'error':'';?>">
@@ -210,7 +227,7 @@ if($valid){
                         </div>
                     </form>
                 </div>
-                 
+
     </div> <!-- /container -->
 
 <?php

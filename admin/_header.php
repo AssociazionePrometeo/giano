@@ -7,7 +7,12 @@
     <title>Giano Manager</title>
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/custom.css" rel="stylesheet">
+    <!-- this should go after your </body> -->
+    <link rel="stylesheet" type="text/css" href="../css/jquery.datetimepicker.min.css"/ >
+    
     <script src="../js/jquery-1.11.3.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/jquery.datetimepicker.full.min.js"></script>
+
 </head>
 <body>
