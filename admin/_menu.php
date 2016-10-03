@@ -16,7 +16,12 @@ include '../function/database.php';
     <div class="container">
         <!-- Logo and responsive toggle -->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false"></button>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+              <span class="sr-only"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
             <a class="navbar-brand" href="/"><span class="glyphicon glyphicon-home"></span>Giano</a>
         </div>
 <!-- Navbar links -->
@@ -99,4 +104,3 @@ include '../function/database.php';
     </div>
     <!-- /.container -->
 </nav>
-

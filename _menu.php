@@ -10,7 +10,12 @@ if ( !isset($_SESSION["ID"] ) ) {
     <div class="container">
         <!-- Logo and responsive toggle -->
         <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false"></button>
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+                <span class="sr-only"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
             <a class="navbar-brand" href="/">
                 <span class="glyphicon glyphicon-home"></span> Giano
             </a>
@@ -32,8 +37,8 @@ if ( !isset($_SESSION["ID"] ) ) {
                     <span class="glyphicon glyphicon-cog"></span> Admin
                     </button></a>
                 </li>
-                
-                ';    
+
+                ';
                 } ?>
                 <li>
                     <a href="profile.php">
