@@ -25,7 +25,7 @@ Database::disconnect();
         <h3>Gestione Utenti</h3>
     </div>
     <?php
-      echo'<p><a href="create_user.php" class="btn btn-success';
+      echo'<p><a href="manage_user.php" class="btn btn-success';
       if (!$ins_users) echo ' disabled' ;
       echo '">Crea nuovo</a></p>';
     ?>
@@ -64,7 +64,7 @@ Database::disconnect();
                     echo '<td>'. $row['last_login'] . '</td>';
                     echo '<td><a class="btn btn-success';
                     if (!$ins_users) {echo ' disabled';}
-                    echo '" href="update_user.php?id='.$row['userid'].'">Update</a>';
+                    echo '" href="manage_user.php?a=update&amp;id='.$row['userid'].'">Update</a>';
                     echo '&nbsp;';
 #                    echo '<a class="btn btn-danger';
 #                    if (!$del_users) echo ' disabled';

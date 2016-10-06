@@ -10,6 +10,7 @@ include '_menu.php';
 // require '../function/database.php';
 
 $valid = null;
+$action = null;
 $pdo = Database::connect();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $sql = 'SELECT * FROM users a INNER JOIN type_user b on a.userid = b.id LEFT JOIN permissions c on a.user_level = c.id WHERE a.userid = ?';
@@ -17,13 +18,29 @@ $q = $pdo->prepare($sql);
 $q->execute(array($_SESSION['ID']));
 $data = $q->fetch(PDO::FETCH_ASSOC);
 if($data['insert_users'] == 1){
-    $valid = true;
+    $valid_permission = true;
 }else{
     header('Location: index.php');
 }
+if ( !empty($_REQUEST['a']) && $_REQUEST['a'] == 'update' && !empty($_REQUEST['id']) ) {
+  $id = $_REQUEST['id'];
+  $action = $_REQUEST['a']; // if a is not set default is insert user
+  $sql = "SELECT * FROM users where userid = ?";
+  $q = $pdo->prepare($sql);
+  $q->execute(array($id));
+  $data = $q->fetch(PDO::FETCH_ASSOC);
+  $name = $data['first_name'];
+  $email = $data['email_address'];
+  $mobile = $data['mobile_number'];
+  $username = $data['username'];
+  $info = $data['info'];
+  $end_date = $data['end_date'];
+  $level = $data['user_level'];
+}
+
 Database::disconnect();
 
-if($valid){
+if($valid_permission) {
     if ( !empty($_POST)) {
         // keep track validation errors
         $nameError = null;
@@ -77,29 +94,42 @@ if($valid){
             $levelError = 'Please enter User Level';
             $valid = false;
         }
-
-        // update data
-        if ($valid) {
-            date_default_timezone_set("Europe/Rome");
+      //}
+        // insert/update user data
+      if ($valid) {
+        $pdo = Database::connect();
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $sql = '';
+        if (isset($action) && $action=='update') {
+              $sql = "UPDATE users  SET first_name = ?, info = ?, username = ?, user_level = ?, email_address = ?, mobile_number =?, end_date = ? WHERE userid = ?";
+              $q = $pdo->prepare($sql);
+              $q->execute(array($name,$info,$username,$level,$email,$mobile,$end_date,$id));
+        }
+        else {
+            date_default_timezone_set('Europe/Rome');
             echo date_default_timezone_get();
             $signup_date= date('Y-m-d');
-            $pdo = Database::connect();
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql = "INSERT INTO users (first_name,info,username,user_level,email_address,mobile_number,signup_date,end_date) values(?,?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO users (first_name,info,username,user_level,email_address,mobile_number,signup_date,end_date) values(? ,?, ?, ?, ?, ?, ?, ?)";
             $q = $pdo->prepare($sql);
             $q->execute(array($name,$info,$username,$level,$email,$mobile,$signup_date,$end_date));
-            Database::disconnect();
-            header("Location: list_user.php");
         }
-    }
+        Database::disconnect();
+        header("Location: list_user.php");
+      } //end if valid
+    } //end empty _POST
+  }
 ?>
 <div class="container">
           <div class="span10 offset1">
               <div class="row">
-                  <h3>Aggiungi Utente</h3>
+                  <h3>Manage Utente</h3>
               </div>
 
-              <form class="form-horizontal" action="create_user.php" method="post">
+              <?php echo '<form class="form-horizontal" action="manage_user.php';
+              if (isset($action) || $action=='update') echo '?a=update';
+              if (isset($id)) echo '&amp;id='. $id;
+              echo '" method="post">';
+              ?>
 
                 <div class="control-group <?php echo !empty($nameError)?'error':'';?>">
                   <label class="control-label">Name</label>
@@ -208,5 +238,4 @@ if($valid){
 
 <?php
     include('_footer.php');
-}
 ?>
