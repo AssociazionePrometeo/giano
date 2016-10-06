@@ -12,9 +12,9 @@ include '_menu.php';
 $valid = null;
 $pdo = Database::connect();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$sql = 'SELECT insert_users FROM permissions WHERE id=?';
+$sql = 'SELECT * FROM users a INNER JOIN type_user b on a.userid = b.id LEFT JOIN permissions c on a.user_level = c.id WHERE a.userid = ?';
 $q = $pdo->prepare($sql);
-$q->execute(array($_SESSION['user_level']));
+$q->execute(array($_SESSION['ID']));
 $data = $q->fetch(PDO::FETCH_ASSOC);
 if($data['insert_users'] == 1){
     $valid = true;
@@ -36,21 +36,21 @@ if($valid){
     if ( !empty($_POST)) {
         // keep track validation errors
         $nameError = null;
-        $infoError = null;
         $usernameError = null;
         $emailError = null;
-        $levelError = null;
         $mobileError = null;
         $end_dateError = null;
+        $levelError = null;
+        $infoError = null;
 
         // keep track post values
         $name = $_POST['name'];
-        $info = $_POST['info'];
         $username = $_POST['username'];
         $email = $_POST['email'];
-        $level = $_POST['level'];
         $mobile = $_POST['mobile'];
         $end_date = $_POST['end_date'];
+        $level = $_POST['level'];
+        $info = $_POST['info'];
 
         // validate input
         $valid = true;
@@ -67,7 +67,7 @@ if($valid){
         }*/
 
         if (empty($username)) {
-            $nameError = 'Please enter Username';
+            $usernameError = 'Please enter Username';
             $valid = false;
         }
 
@@ -80,7 +80,7 @@ if($valid){
         }
 
         if (empty($level)) {
-            $nameError = 'Please select userlevel!';
+            $levelError = 'Please select userlevel!';
             $valid = false;
         }
 
@@ -90,7 +90,7 @@ if($valid){
         }
 
         if (empty($end_date)) {
-            $nameError = 'Please enter expiration date';
+            $end_dateError = 'Please enter expiration date';
             $valid = false;
         }
 
@@ -104,7 +104,8 @@ if($valid){
             Database::disconnect();
             header("Location: list_user.php");
         }
-    } else {
+      }
+      else {
         $pdo = Database::connect();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql = "SELECT * FROM users where userid = ?";
@@ -192,29 +193,27 @@ if($valid){
                           </script>
                         </div>
                       </div>
-                        <div class="control-group <?php echo !empty($levelError)?'error':'';?>">
-                        <label class="control-label">Level</label>
-                       <div class="controls">
-                            <select class="selectpicker" placeholder="level" name="level" data-width="auto">
+
+                      <div class="control-group <?php echo !empty($levelError)?'error':'';?>">
+                        <label class="control-label">User Level</label>
+                        <div class="controls">
+                            <select required class="selectpicker" placeholder="Level" name="level" data-width="auto">
+                                <option value=''></option>
                                 <?php
                                  $pdo = Database::connect();
-           $sql = 'SELECT id, name FROM permissions';
-           foreach ($pdo->query($sql) as $row)
-           {
-            if ($level == $row['id']) {
-            echo'<option value='.$row['id'].' selected>'.$row['name'].'</option>';
-           }else{
-            echo'<option value='.$row['id'].'>'.$row['name'].'</option>';
-            }
-           }
-           Database::disconnect();
+                                 $sql = 'SELECT * FROM type_user';
+                                 foreach ($pdo->query($sql) as $row)
+                                    echo '<option value="' . $row['id'] . "\"" . ((isset($level) && $level == $row['id'])? ' selected="selected"':'') . '>' . $row['level']  . '</option>'."\r\n";
+                                 Database::disconnect();
                                 ?>
-                            <?php if (!empty($levelError)): ?>
-                                <span class="help-inline"><?php echo $levelError;?></span>
-                            <?php endif;?>
                             </select>
+                            <?php
+                              if (!empty($levelError))
+                                echo '<span class="help-inline">' . $levelError . "</span>";
+                            ?>
                           </div>
                       </div>
+
                         <div class="control-group">
                         <label class="control-label">Info</label>
                         <div class="controls">
