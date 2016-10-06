@@ -66,17 +66,44 @@ Database::disconnect();
                     if (!$ins_users) {echo ' disabled';}
                     echo '" href="update_user.php?id='.$row['userid'].'">Update</a>';
                     echo '&nbsp;';
-                    echo '<a class="btn btn-danger';
+#                    echo '<a class="btn btn-danger';
+#                    if (!$del_users) echo ' disabled';
+#                    echo '" href="delete_user.php?id='.$row['userid'].'">Delete</a></td>';
+#                    echo '<td>';
+                    echo '<button type="button" class="btn btn-danger"';
                     if (!$del_users) echo ' disabled';
-                    echo '" href="delete_user.php?id='.$row['userid'].'">Delete</a></td>';
+                    echo ' data-toggle="modal" data-target="#confirm-delete" data-href="remove_user.php?id=' . $row['userid'];
+                    echo '">Delete</button></td>';
                     echo '</tr>';
            }
            Database::disconnect();
           ?>
+          <div class="modal fade" id="confirm-delete" role="dialog" aria-labelledby="mydeleteModal" aria-hidden="true">
+              <div class="modal-dialog">
+                  <div class="modal-content">
+                      <div class="modal-header">
+                          Delete Utente
+                      </div>
+                      <!--div class="modal-body">
+                          Are you sure?
+                      </div-->
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-info" data-dismiss="modal">No</button>
+                          <a class="btn btn-danger btn-ok">Delete</a>
+                      </div>
+                  </div>
+              </div>
+          </div>
           </tbody>
     </table>
     </div>
 </div> <!-- /container -->
+
+<script type="text/javascript">// <![CDATA[
+$('#confirm-delete').on('show.bs.modal', function(e) {
+    $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+});// ]]>
+</script>
 
 <?php
     include('_footer.php');
