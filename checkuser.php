@@ -1,4 +1,4 @@
-<?
+<?php
 /* Check User Script */
 if (session_status() == PHP_SESSION_NONE) {session_start();}
 

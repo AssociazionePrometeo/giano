@@ -1,4 +1,4 @@
-<?
+<?php
 if (session_status() == PHP_SESSION_NONE) {session_start();}
 if (!isset($_SESSION["ID"])) {
     include '_header.php';
@@ -40,7 +40,7 @@ if (!isset($_SESSION["ID"])) {
 </div>
 
     <!-- /.container -->
-        <?
+        <?php
         //include('_footer.php');
     }
     else{

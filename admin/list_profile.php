@@ -35,7 +35,7 @@ if($valid){
                 <thead>
                     <tr>
                         <th>ID #</th>
-                        <th>Nome</th>
+                        <th>Livello</th>
                         <th>Gestione Profili</th>
                         <th>Aggiungere Utenti</th>
                         <th>Rimuovere Utenti</th>
@@ -45,6 +45,7 @@ if($valid){
                         <th>Rimuovere Device</th>
                         <th>Aggiungere Prenotazioni</th>
                         <th>Rimuovere Prenotazioni</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,8 +54,15 @@ if($valid){
            $sql = 'SELECT * FROM permissions ORDER BY id DESC';
            foreach ($pdo->query($sql) as $row) {
                     echo '<tr>';
-                    echo '<td>#' .$row['id']. '</td>';
-                    echo '<td>'. $row['name'] . '</td>';
+                    echo '<td>#'. $row['id'] . '</td>';
+                  $pdo = Database::connect();
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $sql1 = 'SELECT level FROM type_user WHERE id=?';
+            $q = $pdo->prepare($sql1);
+            $q->execute(array($row['type_user']));
+            $data = $q->fetch(PDO::FETCH_ASSOC);
+            echo '<td>'. $data['level'] . '</td>';
+            Database::disconnect();
                     echo '<td>'. $row['permissions'] . '</td>';
                     echo '<td>'. $row['insert_users'] . '</td>';
                     echo '<td>'. $row['delete_users'] . '</td>';
@@ -64,6 +72,7 @@ if($valid){
                     echo '<td>'. $row['delete_devices'] . '</td>';
                     echo '<td>'. $row['insert_reservation'] . '</td>';
                     echo '<td>'. $row['delete_reservation'] . '</td>';
+                    echo '<td>action</td>';
                     echo '</tr>';
            }
            Database::disconnect();

@@ -37,7 +37,7 @@ include '../function/database.php';
                     $q = $pdo->prepare($sql);
                     $q->execute(array($_SESSION['user_level']));
                     $data = $q->fetch(PDO::FETCH_ASSOC);
-                    if($data['insert_users'] == 1)  echo '<li><a href="create_user.php">Aggiungi Utente</a></li>';
+                    if($data['insert_users'] == 1)  echo '<li><a href="manage_user.php">Aggiungi Utente</a></li>';
                     echo '<li role="separator" class="divider"></li>';
                     if($data['permissions'] == 1)  echo '<li><a href="list_profile.php">Gestione Profili</a></li>';
                     Database::disconnect();
