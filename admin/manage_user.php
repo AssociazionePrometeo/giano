@@ -33,6 +33,7 @@ if ( !empty($_REQUEST['a']) && $_REQUEST['a'] == 'update' && !empty($_REQUEST['i
   $email = $data['email_address'];
   $mobile = $data['mobile_number'];
   $username = $data['username'];
+  $password = $data['PASSWORD'];
   $info = $data['info'];
   $end_date = $data['end_date'];
   $level = $data['user_level'];
@@ -45,6 +46,7 @@ if($valid_permission) {
         // keep track validation errors
         $nameError = null;
         $usernameError = null;
+        $passError = null;
         $emailError = null;
         $mobileError = null;
         $end_dateError = null;
@@ -54,6 +56,9 @@ if($valid_permission) {
         // keep track post values
         $name = $_POST['name'];
         $username = $_POST['username'];
+        if (!empty($_POST['password'])){
+        $password = md5($_POST['password']);
+        }
         $email = $_POST['email'];
         $mobile = $_POST['mobile'];
         $end_date = $_POST['end_date'];
@@ -70,6 +75,11 @@ if($valid_permission) {
         if (empty($username)) {
             $usernameError = 'Please enter Username';
             $valid = false;
+        }
+
+        if (empty($password)) {
+            //$passError = 'Please enter Password';
+            $valid = true;
         }
 
         if (empty($email)) {
@@ -101,17 +111,17 @@ if($valid_permission) {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql = '';
         if (isset($action) && $action=='update') {
-              $sql = "UPDATE users  SET first_name = ?, info = ?, username = ?, user_level = ?, email_address = ?, mobile_number =?, end_date = ? WHERE userid = ?";
+              $sql = "UPDATE users  SET first_name = ?, info = ?, username = ?, password=?, user_level = ?, email_address = ?, mobile_number =?, end_date = ? WHERE userid = ?";
               $q = $pdo->prepare($sql);
-              $q->execute(array($name,$info,$username,$level,$email,$mobile,$end_date,$id));
+              $q->execute(array($name,$info,$username,$password,$level,$email,$mobile,$end_date,$id));
         }
         else {
             date_default_timezone_set('Europe/Rome');
             echo date_default_timezone_get();
             $signup_date= date('Y-m-d');
-            $sql = "INSERT INTO users (first_name,info,username,user_level,email_address,mobile_number,signup_date,end_date) values(? ,?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO users (first_name,info,username,password,user_level,email_address,mobile_number,signup_date,end_date) values(? ,?, ?, ?, ?, ?, ?, ?, ?)";
             $q = $pdo->prepare($sql);
-            $q->execute(array($name,$info,$username,$level,$email,$mobile,$signup_date,$end_date));
+            $q->execute(array($name,$info,$username,$password,$level,$email,$mobile,$signup_date,$end_date));
         }
         Database::disconnect();
         header("Location: list_user.php");
@@ -157,6 +167,16 @@ if($valid_permission) {
                       <input name="email" type="text" placeholder="Email Address" value="<?php echo !empty($email)?$email:'';?>">
                       <?php if (!empty($emailError)): ?>
                           <span class="help-inline"><?php echo $emailError;?></span>
+                      <?php endif;?>
+                  </div>
+                </div>
+
+              <div class="control-group <?php echo !empty($passError)?'error':'';?>">
+                  <label class="control-label">Password</label>
+                  <div class="controls">
+                      <input name="password" type="password" placeholder="Leave empty to unchange" value="">
+                      <?php if (!empty($passError)): ?>
+                          <span class="help-inline"><?php echo $passError;?></span>
                       <?php endif;?>
                   </div>
                 </div>
@@ -215,7 +235,7 @@ if($valid_permission) {
                 </div>
 
                 <div class="form-actions">
-                    <button type="submit" class="btn btn-success">Create</button>
+                    <button type="submit" class="btn btn-success">Save</button>
                     <a class="btn" href="list_user.php">Back</a>
                 </div>
               </form>
