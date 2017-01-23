@@ -504,7 +504,7 @@ class Auth
     public function getSessionUserLevel($hash)
     {
         $uid = $this->getSessionUID($hash);
-        $query = $this->dbh->prepare("SELECT user_level FROM {$this->config->table_users} WHERE uid = ?");
+        $query = $this->dbh->prepare("SELECT user_level FROM {$this->config->table_users} WHERE id = ?");
         $query->execute(array($uid));
 
 		if (!$row = $query->fetch(\PDO::FETCH_ASSOC)) {
