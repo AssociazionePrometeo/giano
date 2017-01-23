@@ -29,11 +29,13 @@ try {
     header("Location: login.php");
     exit();
   }
-  $dbh = Database::disconnect();
 
   setcookie($config->cookie_name,$return['hash'],$return['expire']);
   $_SESSION["email"] = $username;
   $_SESSION['user_level'] = $auth->getSessionUserLevel($return['hash']);
+
+  $dbh = Database::disconnect();
+
   header("Location: index.php");
 }
 catch(Exception $e) {
