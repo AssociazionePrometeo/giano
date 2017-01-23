@@ -1,12 +1,24 @@
 <?php
 if (session_status() == PHP_SESSION_NONE) {session_start();}
-if (!isset($_SESSION["ID"]) ) {
+
+$loader = require __DIR__ . '/vendor/autoload.php';
+require 'function/database.php';
+require 'function/Auth.php';
+require 'function/Config.php';
+
+$dbh = Database::connect();
+$config = new PHPAuth\Config($dbh);
+$auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
+
+
+if (!$auth->isLogged()) {
     header('Location: login.php');
-} 
+}
 else {
     include ("_header.php");
     include ("_menu.php");
 }
+$dbh = Database::disconnect();
 ?>
 
 <div class="container">

@@ -1,10 +1,3 @@
-<?php
-
-if ( !isset($_SESSION["ID"] ) ) {
-    header('Location: ../login.php');
-}
-
-?>
 
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">

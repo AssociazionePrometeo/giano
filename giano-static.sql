@@ -95,11 +95,13 @@ UNLOCK TABLES;
 -- Dumping data for table `users`
 --
 
-LOCK TABLES `users` WRITE;
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'admin','admin@fb7.it','admin','6e6bc4e49dd477ebc98ef4046c067b5f','Fablab',1,'+393336666666','2016-09-26','2017-10-31','2016-10-03',1),(2,'manager','manager@fb7.it','manager','6e6bc4e49dd477ebc98ef4046c067b5f','Fablab',2,'+393354444444','2016-09-26','2017-10-31','2016-09-26',1),(3,'user','user@fb7.it','user','6e6bc4e49dd477ebc98ef4046c067b5f','Fablab',3,'+393489999999','2016-09-26','2017-10-31','2016-09-29',1);
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
-UNLOCK TABLES;
+-- LOCK TABLES `users` WRITE;
+-- /*!40000 ALTER TABLE `users` DISABLE KEYS */;
+-- INSERT INTO `users` VALUES (1,'admin','admin@fb7.it','$2y$10$BLzZz/6CzLLPEC02rzpai.hANQsjLJA3DEzvfyQYT/QVuJZxRl21W','Fablab',1,'+393336666666','','','',1,'');
+-- INSERT INTO `users` VALUES (2,'manager','manager@fb7.it','$2y$10$BLzZz/6CzLLPEC02rzpai.hANQsjLJA3DEzvfyQYT/QVuJZxRl21W','Fablab',2,'+393354444444','','','',1,'')
+-- INSERT INTO `users` VALUES (3,'user','user@fb7.it','$2y$10$BLzZz/6CzLLPEC02rzpai.hANQsjLJA3DEzvfyQYT/QVuJZxRl21W','Fablab',3,'+393489999999','','','',1,'');
+-- /*!40000 ALTER TABLE `users` ENABLE KEYS */;
+-- UNLOCK TABLES;
 
 --
 -- Dumping events for database 'giano'

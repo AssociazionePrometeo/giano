@@ -1,8 +1,19 @@
 <?php
-session_start();
+/* Check User Script */
+if (session_status() == PHP_SESSION_NONE) {session_start();}
 
-if ( !isset($_SESSION["ID"]) ) {
-    header('Location: login.php');
+$loader = require __DIR__ . '/vendor/autoload.php';
+require 'function/database.php';
+require 'function/Auth.php';
+require 'function/Config.php';
+
+$dbh = Database::connect();
+$config = new PHPAuth\Config($dbh);
+$auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
+
+if (!$auth->isLogged()) {
+  header('Location: login.php');
+  exit();
 }
 
 include '_header.php';
@@ -28,24 +39,29 @@ include '_menu.php';
           </thead>
           <tbody>
           <?php
-           include 'function/database.php';
-           $pdo = Database::connect();
-           $sql = 'SELECT * FROM tags WHERE userid = '.$_SESSION["ID"].' ORDER BY id DESC';
-           foreach ($pdo->query($sql) as $row) {
-                    echo '<tr>';
-                    echo '<td>#' .$row['id']. '</td>';
-                    echo '<td>' .$row['cardcode']. '</td>';
-                if ($row['status'] == 1){
-                  echo '<td>Attivato</td>';
-                  echo '<td><a class="btn btn-danger" href="disable_tag.php?id='.$row['id'].'">Disattiva!</a></td>';
-                }else{
-                    echo '<td>Disattivato</td>';
-                    echo '<td><p class="bg-danger">Il TAG disattivato può essere riattivato solo da un amministratore</p></td>';
-                }
-                    echo '</tr>';
-           }
-           Database::disconnect();
-          ?>
+          try {
+            $uid = $auth->getSessionUID($_COOKIE[$config->cookie_name]);
+            $sql = 'SELECT * FROM tags WHERE userid = '.$uid.' ORDER BY id DESC';
+            foreach ($dbh->query($sql) as $row) {
+                     echo '<tr>';
+                     echo '<td>#' .$row['id']. '</td>';
+                     echo '<td>' .$row['cardcode']. '</td>';
+                 if ($row['status'] == 1){
+                   echo '<td>Attivato</td>';
+                   echo '<td><a class="btn btn-danger" href="disable_tag.php?id='.$row['id'].'">Disattiva!</a></td>';
+                 }else{
+                     echo '<td>Disattivato</td>';
+                     echo '<td><p class="bg-danger">Il TAG disattivato può essere riattivato solo da un amministratore</p></td>';
+                 }
+                     echo '</tr>';
+            }
+            $dbh = Database::disconnect();
+          }
+          catch(Exception $e) {
+            echo 'Exception -> ';
+            var_dump($e->getMessage());
+          }
+           ?>
           </tbody>
     </table>
     </div>

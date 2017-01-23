@@ -1,5 +1,7 @@
 DROP DATABASE IF EXISTS `giano`;
-CREATE DATABASE  IF NOT EXISTS `giano` /*!40100 DEFAULT CHARACTER SET utf8 */;
+CREATE DATABASE  IF NOT EXISTS `giano`
+
+/*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `giano`;
 -- MySQL dump 10.16  Distrib 10.1.16-MariaDB, for Linux (x86_64)
 --
@@ -53,7 +55,7 @@ CREATE TABLE `log` (
   KEY `fk_log_userid_idx` (`userid`),
   KEY `fk_log_cardcode_idx` (`cardcodeid`),
   CONSTRAINT `fk_log_cardcode` FOREIGN KEY (`cardcodeid`) REFERENCES `tags` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_log_userid` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_log_userid` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -79,7 +81,7 @@ CREATE TABLE `permissions` (
   PRIMARY KEY (`id`),
   KEY `fk_type_user_idx` (`type_user`),
   CONSTRAINT `fk_type_user` FOREIGN KEY (`type_user`) REFERENCES `type_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -99,7 +101,7 @@ CREATE TABLE `reservation` (
   KEY `fk_reservation_userid_idx` (`userid`),
   KEY `fk_reservation_deviceid_idx` (`deviceid`),
   CONSTRAINT `fk_reservation_deviceid` FOREIGN KEY (`deviceid`) REFERENCES `devices` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_reservation_userid` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_reservation_userid` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -131,7 +133,7 @@ CREATE TABLE `tags` (
   `status` int(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_userid_tags_idx` (`userid`),
-  CONSTRAINT `fk_userid_tags` FOREIGN KEY (`userid`) REFERENCES `users` (`userid`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_userid_tags` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -171,23 +173,102 @@ DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `users` (
-  `userid` int(25) NOT NULL AUTO_INCREMENT,
-  `first_name` varchar(25) NOT NULL DEFAULT '',
-  `email_address` varchar(25) DEFAULT '',
-  `username` varchar(25) NOT NULL DEFAULT '',
-  `PASSWORD` varchar(255) NOT NULL DEFAULT '',
-  `info` text,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `first_name` varchar(25) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `password` varchar(60) DEFAULT NULL,
+  `info` text DEFAULT NULL,
   `user_level` int(11) NOT NULL DEFAULT '3',
-  `mobile_number` text NOT NULL,
-  `signup_date` date NOT NULL,
-  `end_date` date NOT NULL,
-  `last_login` date DEFAULT NULL,
-  `activated` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`userid`),
-  KEY `fk_user_level_idx` (`user_level`),
-  CONSTRAINT `fk_user_level` FOREIGN KEY (`user_level`) REFERENCES `type_user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1 COMMENT='Membership Information';
+  `mobile_number` text DEFAULT NULL,
+  `signup_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `end_date` timestamp NULL DEFAULT NULL,
+  `last_login` timestamp NULL DEFAULT NULL,
+  `isactive` tinyint(1) NOT NULL DEFAULT '0',
+  `dt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_user_level_idx` (`user_level`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+
+DROP TABLE IF EXISTS `attempts`;
+CREATE TABLE `attempts` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `ip` varchar(39) NOT NULL,
+  `expiredate` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `config`;
+CREATE TABLE `config` (
+  `setting` varchar(100) NOT NULL,
+  `value` varchar(100) DEFAULT NULL,
+  UNIQUE KEY `setting` (`setting`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO `config` (`setting`, `value`) VALUES
+('attack_mitigation_time',  '+30 minutes'),
+('attempts_before_ban', '30'),
+('attempts_before_verify',  '5'),
+('bcrypt_cost', '10'),
+('cookie_domain', NULL),
+('cookie_forget', '+30 minutes'),
+('cookie_http', '0'),
+('cookie_name', 'ID'),
+('cookie_path', '/'),
+('cookie_remember', '+1 month'),
+('cookie_secure', '0'),
+('emailmessage_suppress_activation',  '0'),
+('emailmessage_suppress_reset', '0'),
+('mail_charset','UTF-8'),
+('password_min_score',  '3'),
+('site_activation_page',  'activate'),
+('site_email',  'no-reply@phpauth.cuonic.com'),
+('site_key',  'fghuior.)/!/jdUkd8s2!7HVHG7777ghg'),
+('site_name', 'PHPAuth'),
+('site_password_reset_page',  'reset'),
+('site_timezone', 'Europe/Rome'),
+('site_url',  'https://github.com/PHPAuth/PHPAuth'),
+('smtp',  '0'),
+('smtp_auth', '1'),
+('smtp_host', 'smtp.example.com'),
+('smtp_password', 'password'),
+('smtp_port', '25'),
+('smtp_security', NULL),
+('smtp_username', 'email@example.com'),
+('table_attempts',  'attempts'),
+('table_requests',  'requests'),
+('table_sessions',  'sessions'),
+('table_users', 'users'),
+('verify_email_max_length', '100'),
+('verify_email_min_length', '5'),
+('verify_email_use_banlist',  '1'),
+('verify_password_min_length',  '3'),
+('request_key_expiration', '+10 minutes');
+
+DROP TABLE IF EXISTS `requests`;
+CREATE TABLE `requests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL,
+  `rkey` varchar(20) NOT NULL,
+  `expire` datetime NOT NULL,
+  `type` varchar(20) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `sessions`;
+CREATE TABLE `sessions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `uid` int(11) NOT NULL,
+  `hash` varchar(40) NOT NULL,
+  `expiredate` datetime NOT NULL,
+  `ip` varchar(39) NOT NULL,
+  `agent` varchar(200) NOT NULL,
+  `cookie_crc` varchar(40) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping events for database 'giano'
