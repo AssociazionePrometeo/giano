@@ -133,7 +133,7 @@ CREATE TABLE `tags` (
   `status` int(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `fk_userid_tags_idx` (`userid`),
-  CONSTRAINT `fk_userid_tags` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_userid_tags` FOREIGN KEY (`userid`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

@@ -28,8 +28,8 @@ try {
   $q = $dbh->prepare($sql);
   $q->execute(array($uid));
   $data = $q->fetch(PDO::FETCH_ASSOC);
-  if($data['insert_users'] == 1)  $ins_users = true;
-  if($data['delete_users'] == 1)  $del_users = true;
+  if($data['insert_users'] == 1)  $ins_users_permission = true;
+  if($data['delete_users'] == 1)  $del_users_permission = true;
 }
 catch (Exception $e) {
   echo 'Exception -> ';
@@ -64,7 +64,8 @@ catch (Exception $e) {
           </thead>
           <tbody>
           <?php
-           $sql = 'SELECT * FROM users join type_user where users.user_level=type_user.id ORDER BY users.id DESC';
+           $sql = 'SELECT u.id, u.email, u.info, u.mobile_number, u.signup_date, u.end_date, u.last_login, u.isactive, t.level
+           FROM users u join type_user t where u.user_level=t.id ORDER BY u.id DESC';
            foreach ($dbh->query($sql) as $row) {
                     echo '<tr>';
                     echo '<td>#' .$row['id']. '</td>';
@@ -76,15 +77,11 @@ catch (Exception $e) {
                     echo '<td>'. $row['end_date'] . '</td>';
                     echo '<td>'. $row['last_login'] . '</td>';
                     echo '<td><a class="btn btn-success';
-                    if (!$ins_users) {echo ' disabled';}
+                    if (!$ins_users_permission) {echo ' disabled';}
                     echo '" href="manage_user.php?a=update&amp;id='.$row['id'].'">Update</a>';
                     echo '&nbsp;';
-#                    echo '<a class="btn btn-danger';
-#                    if (!$del_users) echo ' disabled';
-#                    echo '" href="delete_user.php?id='.$row['id'].'">Delete</a></td>';
-#                    echo '<td>';
                     echo '<button type="button" class="btn btn-danger"';
-                    if (!$del_users) echo ' disabled';
+                    if (!$del_users_permission) echo ' disabled';
                     echo ' data-toggle="modal" data-target="#confirm-delete" data-href="remove_user.php?id=' . $row['id'];
                     echo '">Delete</button></td>';
                     echo '</tr>';
