@@ -1,26 +1,35 @@
 <?php
-session_start();
-if ( !isset($_SESSION["ID"]) ) {
-    header('Location: ../login.php');
+if (session_status() == PHP_SESSION_NONE) {session_start();}
+
+require_once '../function/database.php';
+require_once '../function/Auth.php';
+require_once '../function/Config.php';
+
+$dbh = Database::connect();
+$config = new PHPAuth\Config($dbh);
+$auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
+
+if (!$auth->isLogged()) {
+  header('Location: ../login.php');
+  exit();
 }
 
-//include '_header.php';
+$uid = $auth->getSessionUID($_COOKIE['ID']);
+
+include '_header.php';
 include '_menu.php';
-//include '../function/database.php';
 
 $valid = null;
-$pdo = Database::connect();
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $sql = 'SELECT permissions FROM permissions WHERE id=?';
-$q = $pdo->prepare($sql);
+$q = $dbh->prepare($sql);
 $q->execute(array($_SESSION['user_level']));
 $data = $q->fetch(PDO::FETCH_ASSOC);
 if($data['permissions'] == 1){
     $valid = true;
 }else{
-    header('Location: index.php');
+    header('Location: ../login.php');
 }
-Database::disconnect();
 
 if($valid){
 ?>
@@ -50,19 +59,17 @@ if($valid){
                 </thead>
                 <tbody>
                     <?php
-           $pdo = Database::connect();
+
            $sql = 'SELECT * FROM permissions ORDER BY id DESC';
-           foreach ($pdo->query($sql) as $row) {
+           foreach ($dbh->query($sql) as $row) {
                     echo '<tr>';
                     echo '<td>#'. $row['id'] . '</td>';
-                  $pdo = Database::connect();
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql1 = 'SELECT level FROM type_user WHERE id=?';
-            $q = $pdo->prepare($sql1);
+            $q = $dbh->prepare($sql1);
             $q->execute(array($row['type_user']));
             $data = $q->fetch(PDO::FETCH_ASSOC);
             echo '<td>'. $data['level'] . '</td>';
-            Database::disconnect();
                     echo '<td>'. $row['permissions'] . '</td>';
                     echo '<td>'. $row['insert_users'] . '</td>';
                     echo '<td>'. $row['delete_users'] . '</td>';
@@ -75,7 +82,6 @@ if($valid){
                     echo '<td>action</td>';
                     echo '</tr>';
            }
-           Database::disconnect();
           ?>
                 </tbody>
             </table>
