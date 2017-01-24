@@ -13,9 +13,9 @@ if (!$auth->isLogged()) {
   header('Location: ../login.php');
   exit();
 }
-error_log("session:".$_COOKIE['ID']);
+
 $uid = $auth->getSessionUID($_COOKIE['ID']);
-error_log("uid=".$uid);
+
 try {
   include '_header.php';
   include '_menu.php';
