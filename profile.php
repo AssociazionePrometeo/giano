@@ -1,16 +1,17 @@
 <?php
-session_start();
-$loader = require __DIR__ . '/vendor/autoload.php';
-require 'function/database.php';
-require 'function/Auth.php';
-require 'function/Config.php';
+if (session_status() == PHP_SESSION_NONE) {session_start();}
+
+require_once 'function/database.php';
+require_once 'function/Auth.php';
+require_once 'function/Config.php';
+
 
 $dbh = Database::connect();
 $config = new PHPAuth\Config($dbh);
 $auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
 
 if (!$auth->isLogged()) {
-  header('Location: ../login.php');
+  header('Location: login.php');
   exit();
 }
 
