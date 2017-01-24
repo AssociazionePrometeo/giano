@@ -20,8 +20,8 @@ try {
   include '_header.php';
   include '_menu.php';
 
-  $ins_users = false;
-  $del_users = false;
+  $ins_users_permission = false;
+  $del_users_permission = false;
 
   $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   $sql = 'SELECT * FROM users a INNER JOIN type_user b on a.id = b.id LEFT JOIN permissions c on a.user_level = c.id WHERE a.id = ?';
@@ -44,7 +44,7 @@ catch (Exception $e) {
     </div>
     <?php
       echo'<p><a href="manage_user.php" class="btn btn-success';
-      if (!$ins_users) echo ' disabled' ;
+      if (!$ins_users_permission) echo ' disabled' ;
       echo '">Crea nuovo</a></p>';
     ?>
     <div class="table-responsive row">

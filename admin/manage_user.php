@@ -1,51 +1,58 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {session_start();}
 
-if ( !isset($_SESSION["ID"]) ) {
-    header('Location: ../login.php');
+require_once '../function/database.php';
+require_once '../function/Auth.php';
+require_once '../function/Config.php';
+
+$dbh = Database::connect();
+$config = new PHPAuth\Config($dbh);
+$auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
+
+if (!$auth->isLogged()) {
+  header('Location: ../login.php');
+  exit();
 }
 
-//include '_header.php';
+$uid = $auth->getSessionUID($_COOKIE['ID']);
+
+include '_header.php';
 include '_menu.php';
-// require '../function/database.php';
 
 $valid = null;
 $action = null;
-$pdo = Database::connect();
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$sql = 'SELECT * FROM users a INNER JOIN type_user b on a.userid = b.id LEFT JOIN permissions c on a.user_level = c.id WHERE a.userid = ?';
-$q = $pdo->prepare($sql);
-$q->execute(array($_SESSION['ID']));
+
+$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$sql = 'SELECT * FROM users a INNER JOIN type_user b on a.id = b.id LEFT JOIN permissions c on a.user_level = c.id WHERE a.id = ?';
+$q = $dbh->prepare($sql);
+$q->execute(array($uid));
 $data = $q->fetch(PDO::FETCH_ASSOC);
 if($data['insert_users'] == 1){
-    $valid_permission = true;
+    $insert_users_permission = true;
 }else{
-    header('Location: index.php');
+    header('Location: ../login.php');
 }
 if ( !empty($_REQUEST['a']) && $_REQUEST['a'] == 'update' && !empty($_REQUEST['id']) ) {
   $id = $_REQUEST['id'];
   $action = $_REQUEST['a']; // if a is not set default is insert user
-  $sql = "SELECT * FROM users where userid = ?";
-  $q = $pdo->prepare($sql);
+  $sql = "SELECT * FROM users where id = ?";
+  $q = $dbh->prepare($sql);
   $q->execute(array($id));
   $data = $q->fetch(PDO::FETCH_ASSOC);
   $name = $data['first_name'];
-  $email = $data['email_address'];
+  $email = $data['email'];
   $mobile = $data['mobile_number'];
-  $username = $data['username'];
-  $password = $data['PASSWORD'];
+  $password = $data['password'];
   $info = $data['info'];
   $end_date = $data['end_date'];
   $level = $data['user_level'];
 }
 
-Database::disconnect();
 
-if($valid_permission) {
+if($insert_users_permission) {
     if ( !empty($_POST)) {
         // keep track validation errors
         $nameError = null;
-        $usernameError = null;
         $passError = null;
         $emailError = null;
         $mobileError = null;
@@ -55,7 +62,6 @@ if($valid_permission) {
 
         // keep track post values
         $name = $_POST['name'];
-        $username = $_POST['username'];
         if (!empty($_POST['password'])){
         $password = md5($_POST['password']);
         }
@@ -69,11 +75,6 @@ if($valid_permission) {
         $valid = true;
         if (empty($name)) {
             $nameError = 'Please enter Name';
-            $valid = false;
-        }
-
-        if (empty($username)) {
-            $usernameError = 'Please enter Username';
             $valid = false;
         }
 
@@ -107,23 +108,21 @@ if($valid_permission) {
       //}
         // insert/update user data
       if ($valid) {
-        $pdo = Database::connect();
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql = '';
         if (isset($action) && $action=='update') {
-              $sql = "UPDATE users  SET first_name = ?, info = ?, username = ?, password=?, user_level = ?, email_address = ?, mobile_number =?, end_date = ? WHERE userid = ?";
-              $q = $pdo->prepare($sql);
-              $q->execute(array($name,$info,$username,$password,$level,$email,$mobile,$end_date,$id));
+              $sql = "UPDATE users  SET first_name = ?, info = ?, user_level = ?, email = ?, mobile_number =?, end_date = ? WHERE id = ?";
+              $q = $dbh->prepare($sql);
+              $q->execute(array($name,$info,$level,$email,$mobile,$end_date,$id));
         }
         else {
             date_default_timezone_set('Europe/Rome');
             echo date_default_timezone_get();
             $signup_date= date('Y-m-d');
-            $sql = "INSERT INTO users (first_name,info,username,password,user_level,email_address,mobile_number,signup_date,end_date) values(? ,?, ?, ?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO users (first_name,info,user_level,email,mobile_number,signup_date,end_date) values(? ,?, ?, ?, ?, ?, ?)";
             $q = $pdo->prepare($sql);
-            $q->execute(array($name,$info,$username,$password,$level,$email,$mobile,$signup_date,$end_date));
+            $q->execute(array($name,$info,$level,$email,$mobile,$signup_date,$end_date));
         }
-        Database::disconnect();
         header("Location: list_user.php");
       } //end if valid
     } //end empty _POST
@@ -147,16 +146,6 @@ if($valid_permission) {
                       <input name="name" type="text"  placeholder="Name" value="<?php echo !empty($name)?$name:'';?>">
                       <?php if (!empty($nameError)): ?>
                           <span class="help-inline"><?php echo $nameError;?></span>
-                      <?php endif; ?>
-                  </div>
-                </div>
-
-                <div class="control-group <?php echo !empty($usernameError)?'error':'';?>">
-                  <label class="control-label">Username</label>
-                  <div class="controls">
-                      <input name="username" type="text"  placeholder="Username" value="<?php echo !empty($username)?$username:'';?>">
-                      <?php if (!empty($usernameError)): ?>
-                          <span class="help-inline"><?php echo $usernameError;?></span>
                       <?php endif; ?>
                   </div>
                 </div>
