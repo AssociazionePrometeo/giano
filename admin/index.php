@@ -1,10 +1,24 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {session_start();}
 
-if ( !isset($_SESSION) || !isset($_SESSION["ID"]) ) {
-    header('Location: ../login.php');
-    exit;
+require_once '../function/database.php';
+require_once '../function/Auth.php';
+require_once '../function/Config.php';
+
+
+$dbh = Database::connect();
+$config = new PHPAuth\Config($dbh);
+$auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
+
+if (!$auth->isLogged()) {
+  header('Location: ../login.php');
+  exit();
 }
+else {
+    include ("_header.php");
+    include ("_menu.php");
+}
+$dbh = Database::disconnect();
 
 if ($_SESSION['user_level'] >= 3) {
     error_log("user_level ". $_SESSION['user_level'],0);
@@ -12,8 +26,7 @@ if ($_SESSION['user_level'] >= 3) {
     header('Location: ../login.php');
     exit;
 }
-//include '_header.php';
-include '_menu.php';
+
 ?>
 <div class="container">
    <div class="row">

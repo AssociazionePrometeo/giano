@@ -1,15 +1,32 @@
 <?php
-if ( !isset($_SESSION["ID"] ) ) {
-    header('Location: ../login.php');
-    exit;
+
+if (session_status() == PHP_SESSION_NONE) {session_start();}
+
+require_once '../function/database.php';
+require_once '../function/Auth.php';
+require_once '../function/Config.php';
+
+$dbh = Database::connect();
+$config = new PHPAuth\Config($dbh);
+$auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
+
+if (!$auth->isLogged()) {
+  header('Location: ../login.php');
+  exit();
 }
-if ($_SESSION['user_level'] >= 3) {
-    session_destroy();
-    header('Location: ../login.php');
-    exit;
+
+try {
+  $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  // SELECT insert_users, permissions, insert_devices,insert_tags FROM permissions WHERE id=?
+  $row = $dbh->prepare('SELECT insert_users, permissions, insert_devices,insert_tags FROM permissions WHERE id=?');
+  $row->execute(array($_SESSION['user_level']));
+  $data = $row->fetch(PDO::FETCH_ASSOC);
+  #error_log("aa". implode("|",$data));
 }
-include '_header.php';
-include '../function/database.php';
+catch(Exception $e) {
+  echo 'Exception -> ';
+  var_dump($e->getMessage());
+}
 ?>
 <!-- Navigation -->
 <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -31,16 +48,9 @@ include '../function/database.php';
                     <ul class="dropdown-menu" aria-labelledby="drop1">
                         <li><a href="list_user.php">Lista Utenti</a></li>
                         <?php
-                    $pdo = Database::connect();
-                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $sql = 'SELECT insert_users, permissions FROM permissions WHERE id=?';
-                    $q = $pdo->prepare($sql);
-                    $q->execute(array($_SESSION['user_level']));
-                    $data = $q->fetch(PDO::FETCH_ASSOC);
-                    if($data['insert_users'] == 1)  echo '<li><a href="manage_user.php">Aggiungi Utente</a></li>';
-                    echo '<li role="separator" class="divider"></li>';
-                    if($data['permissions'] == 1)  echo '<li><a href="list_profile.php">Gestione Profili</a></li>';
-                    Database::disconnect();
+                          if($data['insert_users'] == 1)  echo '<li><a href="manage_user.php">Aggiungi Utente</a></li>';
+                          echo '<li role="separator" class="divider"></li>';
+                          if($data['permissions'] == 1)  echo '<li><a href="list_profile.php">Gestione Profili</a></li>';
                         ?>
                         <li><a href="#"></a></li>
                     </ul>
@@ -48,16 +58,9 @@ include '../function/database.php';
                 <li class="dropdown"> <a href="#" class="dropdown-toggle" id="drop2" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Devices<span class="caret"></span> </a>
                     <ul class="dropdown-menu" aria-labelledby="drop2">
                         <li><a href="list_device.php">Lista Devices</a></li>
-                         <?php
-                    $pdo = Database::connect();
-                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $sql = 'SELECT insert_devices FROM permissions WHERE id=?';
-                    $q = $pdo->prepare($sql);
-                    $q->execute(array($_SESSION['user_level']));
-                    $data = $q->fetch(PDO::FETCH_ASSOC);
+                        <?php
                     if($data['insert_devices'] == 1)  echo '<li><a href="create_device.php">Aggiungi Devices</a></li>';
-                    Database::disconnect();
-                        ?>
+                  ?>
                      </ul>
                 </li>
                 <li class="dropdown"> <a href="#" class="dropdown-toggle" id="drop3" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="true">Tags<span class="caret"></span> </a>
@@ -65,15 +68,8 @@ include '../function/database.php';
                         <li><a href="list_tag.php">Lista Tags</a></li>
 
                         <?php
-                    $pdo = Database::connect();
-                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                    $sql = 'SELECT insert_tags FROM permissions WHERE id=?';
-                    $q = $pdo->prepare($sql);
-                    $q->execute(array($_SESSION['user_level']));
-                    $data = $q->fetch(PDO::FETCH_ASSOC);
                     if($data['insert_tags'] == 1)  echo '<li><a href="create_tag.php">Aggiungi Tags</a></li>';
-                    Database::disconnect();
-                        ?>
+                  ?>
                     </ul>
                 </li>
             </ul>
