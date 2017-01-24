@@ -1,59 +1,62 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {session_start();}
 
-if ( !isset($_SESSION["ID"]) ) {
-    header('Location: ../login.php');
+require_once '../function/database.php';
+require_once '../function/Auth.php';
+require_once '../function/Config.php';
+
+$dbh = Database::connect();
+$config = new PHPAuth\Config($dbh);
+$auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
+
+if (!$auth->isLogged()) {
+  header('Location: ../login.php');
+  exit();
 }
 
-//include '_header.php';
+include '_header.php';
 include '_menu.php';
-//require '../function/database.php';
 
 $valid = null;
-$pdo = Database::connect();
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$dbh = Database::connect();
+$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $sql = 'SELECT delete_devices FROM permissions WHERE id=?';
-$q = $pdo->prepare($sql);
+$q = $dbh->prepare($sql);
 $q->execute(array($_SESSION['user_level']));
 $data = $q->fetch(PDO::FETCH_ASSOC);
 if($data['delete_devices'] == 1){
     $valid = true;
 }else{
-    header('Location: index.php');
+    header('Location: ../login.php');
 }
-Database::disconnect();
 
 if($valid){
     $id = 0;
-     
+
     if ( !empty($_GET['id'])) {
         $id = $_REQUEST['id'];
     }
-     
+
     if ( !empty($_POST)) {
         // keep track post values
         $id = $_POST['id'];
-         
+
         // delete data
-        $pdo = Database::connect();
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql = "DELETE FROM devices  WHERE id = ?";
-        $q = $pdo->prepare($sql);
+        $q = $dbh->prepare($sql);
         $q->execute(array($id));
-        Database::disconnect();
         header("Location: list_device.php");
-         
     }
 ?>
- 
+
 
     <div class="container">
-     
+
                 <div class="span10 offset1">
                     <div class="row">
                         <h3>Delete Utente</h3>
                     </div>
-                     
+
                     <form class="form-horizontal" action="delete_device.php" method="post">
                       <input type="hidden" name="id" value="<?php echo $id;?>"/>
                       <p class="alert alert-error">Are you sure to delete ?</p>
@@ -63,7 +66,7 @@ if($valid){
                         </div>
                     </form>
                 </div>
-                 
+
     </div> <!-- /container -->
 
 <?php

@@ -1,96 +1,99 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {session_start();}
 
-if ( !isset($_SESSION["ID"]) ) {
-    header('Location: ../login.php');
+require_once '../function/database.php';
+require_once '../function/Auth.php';
+require_once '../function/Config.php';
+
+$dbh = Database::connect();
+$config = new PHPAuth\Config($dbh);
+$auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
+
+if (!$auth->isLogged()) {
+  header('Location: ../login.php');
+  exit();
 }
 
-//include '_header.php';
+$uid = $auth->getSessionUID($_COOKIE['ID']);
+
+include '_header.php';
 include '_menu.php';
-//require '../function/database.php';
 
 $valid = null;
-$pdo = Database::connect();
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $sql = 'SELECT insert_devices FROM permissions WHERE id=?';
-$q = $pdo->prepare($sql);
+$q = $dbh->prepare($sql);
 $q->execute(array($_SESSION['user_level']));
 $data = $q->fetch(PDO::FETCH_ASSOC);
 if($data['insert_devices'] == 1){
     $valid = true;
 }else{
-    header('Location: index.php');
+    header('Location: ../login.php');
 }
-Database::disconnect();
+
 
 if($valid){
     $id = null;
     if ( !empty($_GET['id'])) {
         $id = $_REQUEST['id'];
     }
-     
+
     if ( null==$id ) {
-        header("Location: index.php");
+        header("Location: ../login.php");
     }
-     
+
     if ( !empty($_POST)) {
         // keep track validation errors
         $nameError = null;
         $activeError = null;
         $typeError = null;
-         
+
         // keep track post values
         $name = $_POST['name'];
         $active = $_POST['active'];
         $type = $_POST['type'];
-         
+
         // validate input
         $valid = true;
         if (empty($name)) {
             $nameError = 'Please enter Name';
             $valid = false;
         }
-         
+
         if (empty($active)) {
             $emailError = 'Please enter Active';
             $valid = false;
         }
-         
+
         if (empty($type)) {
             $mobileError = 'Please enter Type';
             $valid = false;
         }
-         
+
         // update data
         if ($valid) {
-            $pdo = Database::connect();
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $sql = "UPDATE devices  set name = ?, active = ?, type =? WHERE id = ?";
-            $q = $pdo->prepare($sql);
+            $q = $dbh->prepare($sql);
             $q->execute(array($name,$active,$type,$id));
-            Database::disconnect();
             header("Location: list_device.php");
         }
     } else {
-        $pdo = Database::connect();
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql = "SELECT * FROM devices where id = ?";
-        $q = $pdo->prepare($sql);
+        $q = $dbh->prepare($sql);
         $q->execute(array($id));
         $data = $q->fetch(PDO::FETCH_ASSOC);
         $name = $data['name'];
         $active = $data['active'];
         $type = $data['type'];
-        Database::disconnect();
     }
 ?>
 <div class="container">
-     
+
                 <div class="span10 offset1">
                     <div class="row">
                         <h3>Update Device</h3>
                     </div>
-             
+
                     <form class="form-horizontal" action="update_device.php?id=<?php echo $id?>" method="post">
                       <div class="control-group <?php echo !empty($nameError)?'error':'';?>">
                         <label class="control-label">Name</label>
@@ -125,7 +128,7 @@ if($valid){
                         </div>
                     </form>
                 </div>
-                 
+
     </div> <!-- /container -->
 
 <?php

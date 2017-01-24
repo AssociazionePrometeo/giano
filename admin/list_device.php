@@ -1,13 +1,22 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {session_start();}
 
-if ( !isset($_SESSION["ID"]) ) {
-    header('Location: ../login.php');
+require_once '../function/database.php';
+require_once '../function/Auth.php';
+require_once '../function/Config.php';
+
+$dbh = Database::connect();
+$config = new PHPAuth\Config($dbh);
+$auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
+
+if (!$auth->isLogged()) {
+  header('Location: ../login.php');
+  exit();
 }
 
-//include '_header.php';
+include '_header.php';
 include '_menu.php';
-//include '../function/database.php';
+
 ?>
 
 
@@ -32,9 +41,9 @@ include '_menu.php';
           </thead>
           <tbody>
           <?php
-           $pdo = Database::connect();
+
            $sql = 'SELECT * FROM devices ORDER BY id DESC';
-           foreach ($pdo->query($sql) as $row) {
+           foreach ($dbh->query($sql) as $row) {
                     echo '<tr>';
                     echo '<td>#' .$row['id']. '</td>';
                     echo '<td>'. $row['name'] . '</td>';
@@ -45,7 +54,6 @@ include '_menu.php';
                     echo '<a class="btn btn-danger" href="delete_device.php?id='.$row['id'].'">Delete</a></td>';
                     echo '</tr>';
            }
-           Database::disconnect();
           ?>
           </tbody>
     </table>
