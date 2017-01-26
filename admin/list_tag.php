@@ -1,22 +1,35 @@
 <?php
-session_start();
-if ( !isset($_SESSION["ID"]) ) {
-    header('Location: ../login.php');
+if (session_status() == PHP_SESSION_NONE) {session_start();}
+
+require_once '../function/database.php';
+require_once '../function/Auth.php';
+require_once '../function/Config.php';
+
+$dbh = Database::connect();
+$config = new PHPAuth\Config($dbh);
+$auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
+
+if (!$auth->isLogged()) {
+  header('Location: ../login.php');
+  exit();
 }
-//include '_header.php';
+
+$uid = $auth->getSessionUID($_COOKIE['ID']);
+
+include '_header.php';
 include '_menu.php';
-//include '../function/database.php';
+
 $ins_tags = false;
 $del_tags = false;
-$pdo = Database::connect();
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$sql = 'SELECT * FROM users a INNER JOIN type_user b on a.userid = b.id LEFT JOIN permissions c on a.user_level = c.id WHERE a.userid = ?';
-$q = $pdo->prepare($sql);
-$q->execute(array($_SESSION['ID']));
+$dbh = Database::connect();
+$dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$sql = 'SELECT * FROM users a INNER JOIN type_user b on a.id = b.id LEFT JOIN permissions c on a.user_level = c.id WHERE a.id = ?';
+$q = $dbh->prepare($sql);
+$q->execute(array($uid));
 $data = $q->fetch(PDO::FETCH_ASSOC);
-if($data['insert_tags'] == 1)  $ins_tags = true;
-if($data['delete_tags'] == 1)  $del_tags = true;
-Database::disconnect();
+if($data['insert_tags'] == 1)  $ins_tags_permission = true;
+if($data['delete_tags'] == 1)  $del_tags_permission = true;
+
 ?>
     <div class="container">
         <div class="row">
@@ -39,36 +52,31 @@ Database::disconnect();
                 </thead>
                 <tbody>
                     <?php
-           $pdo = Database::connect();
            $sql = 'SELECT * FROM tags ORDER BY id DESC';
-           foreach ($pdo->query($sql) as $row) {
+           foreach ($dbh->query($sql) as $row) {
                     echo '<tr>';
                     echo '<td>#' .$row['id']. '</td>';
                     echo '<td>'. $row['cardcode'] . '</td>';
-            $pdo = Database::connect();
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $sql1 = 'SELECT first_name FROM users WHERE userid=?';
-            $q = $pdo->prepare($sql1);
-            $q->execute(array($row['userid']));
+            $sql1 = 'SELECT first_name FROM users WHERE id=?';
+            $q = $dbh->prepare($sql1);
+            $q->execute(array($row['id']));
             $data = $q->fetch(PDO::FETCH_ASSOC);
             echo '<td>'.$data['first_name'].'</td>';
-            Database::disconnect();
                if ($row['status'] == 1){
                     echo '<td>Abilitato</td>';
                }else{
                    echo '<td>Disabilitato</td>';
                }
                     echo '<td><a class="btn btn-success';
-                    if (!$ins_tags) {echo ' disabled';}
-                    echo '" href="update_tag.php?id='.$row['userid'].'">Update</a>';
+                    if (!$ins_tags_permission) {echo ' disabled';}
+                    echo '" href="update_tag.php?id='.$row['id'].'">Update</a>';
                     echo '&nbsp;';
                     echo '<button type="button" class="btn btn-danger"';
-                    if (!$del_tags) echo ' disabled';
-                    echo ' data-toggle="modal" data-target="#confirm-delete" data-href="delete_tag.php?id=' . $row['userid'];
+                    if (!$del_tags_permission) echo ' disabled';
+                    echo ' data-toggle="modal" data-target="#confirm-delete" data-href="delete_tag.php?id=' . $row['id'];
                     echo '">Delete</button></td>';
                     echo '</tr>';
            }
-           Database::disconnect();
           ?>
                       <div class="modal fade" id="confirm-delete" role="dialog" aria-labelledby="mydeleteModal" aria-hidden="true">
               <div class="modal-dialog">
