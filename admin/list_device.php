@@ -41,14 +41,17 @@ include '_menu.php';
           </thead>
           <tbody>
           <?php
-
-           $sql = 'SELECT * FROM devices ORDER BY id DESC';
+           $sql = 'SELECT u.id, u.name, u.active, t.name FROM devices u join type_device t where u.type=t.id ORDER BY u.id DESC';
            foreach ($dbh->query($sql) as $row) {
                     echo '<tr>';
                     echo '<td>#' .$row['id']. '</td>';
                     echo '<td>'. $row['name'] . '</td>';
-                    echo '<td>'. $row['active'] . '</td>';
-                    echo '<td>'. $row['type'] . '</td>';
+                if ($row['active']=='1') {
+                    echo '<td>yes</td>';
+                }else{
+                    echo '<td>NO</td>';
+                }
+                    echo '<td>'. $row['name'] . '</td>';
                     echo '<td><a class="btn btn-success" href="update_device.php?id='.$row['id'].'">Update</a>';
                     echo ' ';
                     echo '<a class="btn btn-danger" href="delete_device.php?id='.$row['id'].'">Delete</a></td>';

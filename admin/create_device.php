@@ -1,12 +1,23 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {session_start();}
 
-if ( !isset($_SESSION["ID"]) ) {
-    header('Location: ../login.php');
+require_once '../function/database.php';
+require_once '../function/Auth.php';
+require_once '../function/Config.php';
+
+$dbh = Database::connect();
+$config = new PHPAuth\Config($dbh);
+$auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
+
+if (!$auth->isLogged()) {
+  header('Location: ../login.php');
+  exit();
 }
 
-//include '_header.php';
+include '_header.php';
 include '_menu.php';
+
+
 //require '../function/database.php';
 $valid = null;
 $pdo = Database::connect();
@@ -38,14 +49,14 @@ if($valid){
         // validate input
         $valid = true;
         if (empty($name)) {
-            $nameError = 'Please enter Card Code';
+            $nameError = 'Please enter Device name';
             $valid = false;
         }
          
-        if (empty($active)) {
+       /* if (empty($active)) {
             $activeError = 'Please enter active';
             $valid = false;
-        }
+        }*/
          
         if (empty($type)) {
             $typeError = 'Please enter type';
@@ -60,7 +71,7 @@ if($valid){
             $q = $pdo->prepare($sql);
             $q->execute(array($name,$active,$type));
             Database::disconnect();
-            header("Location: index_device.php");
+            header("Location: list_device.php");
         }
     }
 ?>
@@ -73,7 +84,7 @@ if($valid){
              
                     <form class="form-horizontal" action="create_device.php" method="post">
                       <div class="control-group <?php echo !empty($nameError)?'error':'';?>">
-                        <label class="control-label">Card Code</label>
+                        <label class="control-label">Device name</label>
                         <div class="controls">
                             <input name="name" type="text"  placeholder="Name" value="<?php echo !empty($name)?$name:'';?>">
                             <?php if (!empty($nameError)): ?>
