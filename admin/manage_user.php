@@ -46,6 +46,7 @@ if ( !empty($_REQUEST['a']) && $_REQUEST['a'] == 'update' && !empty($_REQUEST['i
   $info = $data['info'];
   $end_date = $data['end_date'];
   $level = $data['user_level'];
+  $isactive = $data['isactive'];
 }
 
 
@@ -59,17 +60,19 @@ if($insert_users_permission) {
         $end_dateError = null;
         $levelError = null;
         $infoError = null;
+        $isactiveError = null;
 
         // keep track post values
         $name = $_POST['name'];
         if (!empty($_POST['password'])){
-        $password = md5($_POST['password']);
+        $password = ($_POST['password']);
         }
         $email = $_POST['email'];
         $mobile = $_POST['mobile'];
         $end_date = $_POST['end_date'];
         $level = $_POST['level'];
         $info = $_POST['info'];
+        $isactive = $_POST['isactive'];
 
         // validate input
         $valid = true;
@@ -105,23 +108,27 @@ if($insert_users_permission) {
             $levelError = 'Please enter User Level';
             $valid = false;
         }
-      //}
+
+       //}
         // insert/update user data
       if ($valid) {
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $sql = '';
         if (isset($action) && $action=='update') {
-              $sql = "UPDATE users  SET first_name = ?, info = ?, user_level = ?, email = ?, mobile_number =?, end_date = ? WHERE id = ?";
+              $sql = "UPDATE users  SET first_name = ?, info = ?, user_level = ?, email = ?, mobile_number =?, end_date = ?, isactive = ? WHERE id = ?";
               $q = $dbh->prepare($sql);
-              $q->execute(array($name,$info,$level,$email,$mobile,$end_date,$id));
+              $q->execute(array($name,$info,$level,$email,$mobile,$end_date,$isactive,$id));
         }
         else {
             date_default_timezone_set('Europe/Rome');
             echo date_default_timezone_get();
             $signup_date= date('Y-m-d');
-            $sql = "INSERT INTO users (first_name,info,user_level,email,mobile_number,signup_date,end_date) values(? ,?, ?, ?, ?, ?, ?)";
-            $q = $pdo->prepare($sql);
-            $q->execute(array($name,$info,$level,$email,$mobile,$signup_date,$end_date));
+            $pdo = Database::connect();
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $return = $auth->register($email, $password, $password);
+            $sql = "UPDATE users  SET first_name = ?, info = ?, user_level = ?, mobile_number =?, end_date = ?, isactive = ? WHERE email = ?";
+            $q = $dbh->prepare($sql);
+             $q->execute(array($name,$info,$level,$mobile,$end_date,$isactive,$email));
         }
         header("Location: list_user.php");
       } //end if valid
@@ -131,7 +138,7 @@ if($insert_users_permission) {
 <div class="container">
           <div class="span10 offset1">
               <div class="row">
-                  <h3>Manage Utente</h3>
+                  <h3>Manage Users</h3>
               </div>
 
               <?php echo '<form class="form-horizontal" action="manage_user.php';
@@ -221,6 +228,26 @@ if($insert_users_permission) {
                   <div class="controls">
                       <input name="info" type="text"  placeholder="Info" value="<?php echo !empty($info)?$info:'';?>">
                       </div>
+                </div>
+
+              <div class="control-group <?php echo !empty($isactiveError)?'error':'';?>">
+                  <label class="control-label">Stato</label>
+                  <div class="controls">
+                      <select required class="selectpicker" placeholder="stato" name="isactive" data-width="auto">
+                       <?php
+                        if ($isactive == '0'){
+                            echo"<option value='0' selected='selected'>disattivato</option>";
+                        }else{
+                            echo"<option value='0'>disattivato</option>";
+                        }
+                        if ($isactive == '1'){
+                            echo"<option value='1' selected='selected'>attivato</option>";
+                        }else{
+                            echo"<option value='1'>attivato</option>";
+                        }
+                        ?>
+                      </select>
+                  </div>
                 </div>
 
                 <div class="form-actions">

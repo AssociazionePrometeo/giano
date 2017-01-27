@@ -59,12 +59,13 @@ catch (Exception $e) {
               <th>Data Iscrizione</th>
               <th>Data Scadenza</th>
               <th>Ultimo accesso (WEB)</th>
+              <th>Stato</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
           <?php
-           $sql = 'SELECT u.id, u.email, u.info, u.mobile_number, u.signup_date, u.end_date, u.last_login, u.isactive, t.level
+           $sql = 'SELECT u.id, u.email, u.info, u.mobile_number, u.signup_date, u.end_date, u.last_login, u.isactive, t.level, u.isactive
            FROM users u join type_user t where u.user_level=t.id ORDER BY u.id DESC';
            foreach ($dbh->query($sql) as $row) {
                     echo '<tr>';
@@ -76,6 +77,9 @@ catch (Exception $e) {
                     echo '<td>'. $row['signup_date'] . '</td>';
                     echo '<td>'. $row['end_date'] . '</td>';
                     echo '<td>'. $row['last_login'] . '</td>';
+                    if ($row['isactive']=='1') {
+                        echo '<td>attivo</td>';
+                    }else{echo '<td>disattivato</td>';}
                     echo '<td><a class="btn btn-success';
                     if (!$ins_users_permission) {echo ' disabled';}
                     echo '" href="manage_user.php?a=update&amp;id='.$row['id'].'">Update</a>';
