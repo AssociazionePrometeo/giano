@@ -51,8 +51,9 @@ if ( !empty($_GET)) {
     // update data
     if ($valid) {
         $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = '';
-        if ($_SESSION['user_level'] > 3) {
+        //$sql = '';
+        if ($_SESSION['user_level'] >= 3) {
+            $status = "0";
             $sql = "UPDATE tags  set status =? WHERE id = ? AND userid = ?";
             $q = $dbh->prepare($sql);
             $q->execute(array($status,$id,$userid));

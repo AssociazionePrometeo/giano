@@ -21,55 +21,52 @@ include '_menu.php';
 ?>
 
 
-<div class="container">
-    <div class="row">
-        <h3>Disattivazione Tag</h3>
-    </div>
-    <p>
-     <div class="table-responsive row">
-        <table class="table table-striped table-bordered">
-          <thead>
-            <tr>
-              <th>ID #</th>
-              <th>Card Code</th>
-              <th>User</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-          <?php
+    <div class="container">
+        <div class="row">
+            <h3>Disattivazione Tag</h3>
+        </div>
+        <p>
+            <div class="table-responsive row">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>ID #</th>
+                            <th>Card Code</th>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
           try {
             $uid = $auth->getSessionUID($_COOKIE[$config->cookie_name]);
-            $sql = '';
             if ($_SESSION['user_level'] < 3) {
               $sql = 'SELECT t.id,t.cardcode, u.email as userid, t.status FROM tags t INNER JOIN users u ON t.userid = u.id ORDER BY t.id DESC';
             }
             else {
-              $sql = 'SELECT t.id,t.cardcode, u.email as userid, t.status FROM tags t
-              INNER JOIN users u ON t.userid = u.id WHERE u.id = ' . $uid . 'ORDER BY t.id DESC';
+               $sql = 'SELECT t.id,t.cardcode, u.email as userid, t.status FROM tags t INNER JOIN users u ON t.userid = u.id WHERE u.id = ' . $uid . ' ORDER BY t.id DESC';
             }
             foreach ($dbh->query($sql) as $row) {
                      echo '<tr>';
                      echo '<td>#' .$row['id']. '</td>';
                      echo '<td>' .$row['cardcode']. '</td>';
                      echo '<td>' .$row['userid'] . '</td>';
-                 if ($row['status'] == 1){
+                    if ($row['status'] == 1){
                    echo '<td><p class="text-success">Attivato</p></td>';
-                   if ($_SESSION['user_level'] < 3) {
-                     echo '<td><a class="btn btn-danger" href="disable_tag.php?a=0&id='.$row['id'].'">Disattiva!</a></td>';
-                   }
-                 }
-                 else{
+                   echo '<td><a class="btn btn-danger" href="disable_tag.php?a=0&id='.$row['id'].'">Disattiva!</a></td>';
+                     }
+                    else{
                      echo '<td><p class="text-danger">Disattivato</p></td>';
                      if ($_SESSION['user_level'] < 3) {
                        echo '<td><a class="btn btn-warning" href="disable_tag.php?a=1&id='.$row['id'].'">Attiva!</a>';
-                     }
-                     else {
-                       echo '<tr><p class="bg-danger">Il TAG disattivato può essere riattivato solo da un amministratore</p></td></td>';
-                     }
-                 }
+                        }
+                         else {
+                       echo '<td><p class="text-danger">Il TAG disattivato può essere riattivato solo da un amministratore</p></td></td>';
+                            }
+                        }
                      echo '</tr>';
+
             }
             $dbh = Database::disconnect();
           }
@@ -78,11 +75,12 @@ include '_menu.php';
             var_dump($e->getMessage());
           }
            ?>
-          </tbody>
-    </table>
+                    </tbody>
+                </table>
+            </div>
     </div>
-</div> <!-- /container -->
+    <!-- /container -->
 
-<?php
+    <?php
     include('_footer.php');
 ?>
