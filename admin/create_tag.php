@@ -1,13 +1,22 @@
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {session_start();}
 
-if ( !isset($_SESSION["ID"]) ) {
-    header('Location: ../login.php');
+require_once '../function/database.php';
+require_once '../function/Auth.php';
+require_once '../function/Config.php';
+
+$dbh = Database::connect();
+$config = new PHPAuth\Config($dbh);
+$auth   = new PHPAuth\Auth($dbh, $config, "it_IT");
+
+if (!$auth->isLogged()) {
+  header('Location: ../login.php');
+  exit();
 }
 
-//include '_header.php';
+include '_header.php';
 include '_menu.php';
-//require '../function/database.php';
+
 $valid = null;
 $pdo = Database::connect();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -54,7 +63,7 @@ if($valid){
             $q = $pdo->prepare($sql);
             $q->execute(array($cardcode,$userid,$status));
             Database::disconnect();
-            header("Location: index_tag.php");
+            header("Location: list_tag.php");
         }
     }
 ?>
@@ -80,13 +89,13 @@ if($valid){
                             <select class="selectpicker" placeholder="userid" name="userid" data-width="auto">
                                 <?php
                                  $pdo = Database::connect();
-           $sql = 'SELECT first_name, userid FROM users';
+           $sql = 'SELECT first_name, id FROM users';
            foreach ($pdo->query($sql) as $row)
            {
-            if ($userid == $row['userid']){
-            echo'<option value='.$row['userid']. ' selected>'.$row['first_name'].'</option>';
+            if ($userid == $row['id']){
+            echo'<option value='.$row['id']. ' selected>'.$row['first_name'].'</option>';
             }else{
-            echo'<option value='.$row['userid'].'>'.$row['first_name'].'</option>';
+            echo'<option value='.$row['id'].'>'.$row['first_name'].'</option>';
             }
            }
             Database::disconnect();

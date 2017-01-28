@@ -52,7 +52,7 @@ catch (Exception $e) {
           <thead>
             <tr>
               <th>ID #</th>
-              <th>Info</th>
+              <th>Nome</th>
               <th>Email</th>
               <th>User Level</th>
               <th>Numero Telefono</th>
@@ -60,17 +60,18 @@ catch (Exception $e) {
               <th>Data Scadenza</th>
               <th>Ultimo accesso (WEB)</th>
               <th>Stato</th>
+              <th>Info</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
           <?php
-           $sql = 'SELECT u.id, u.email, u.info, u.mobile_number, u.signup_date, u.end_date, u.last_login, u.isactive, t.level, u.isactive
+           $sql = 'SELECT u.id, u.first_name, u.email, u.info, u.mobile_number, u.signup_date, u.end_date, u.last_login, u.isactive, t.level, u.isactive
            FROM users u join type_user t where u.user_level=t.id ORDER BY u.id DESC';
            foreach ($dbh->query($sql) as $row) {
                     echo '<tr>';
                     echo '<td>#' .$row['id']. '</td>';
-                    echo '<td>'. $row['info'] . '</td>';
+                    echo '<td>'. $row['first_name'] . '</td>';
                     echo '<td>'. $row['email'] . '</td>';
                     echo '<td>'. $row['level'].'</td>';
                     echo '<td>'. $row['mobile_number'] . '</td>';
@@ -80,6 +81,7 @@ catch (Exception $e) {
                     if ($row['isactive']=='1') {
                         echo '<td>attivo</td>';
                     }else{echo '<td>disattivato</td>';}
+                    echo '<td>'. $row['info'] . '</td>';
                     echo '<td><a class="btn btn-success';
                     if (!$ins_users_permission) {echo ' disabled';}
                     echo '" href="manage_user.php?a=update&amp;id='.$row['id'].'">Update</a>';

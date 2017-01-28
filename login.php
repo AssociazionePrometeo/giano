@@ -14,9 +14,9 @@ if (!isset($_SESSION["ID"])) {
     <div class="jumbotron" >
         <form class="form-horizontal" action="checkuser.php" method="post">
             <div class="form-group">
-                <label for="inputEmail3" class="col-sm-2 control-label">User</label>
+                <label for="inputEmail3" class="col-sm-2 control-label">E-mail</label>
                 <div class="col-sm-offset-1 col-sm-8">
-                    <input type="text" class="form-control" name="username" placeholder="User">
+                    <input type="text" class="form-control" name="username" placeholder="E-mail">
                 </div>
             </div>
             <div class="form-group">

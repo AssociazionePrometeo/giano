@@ -52,6 +52,7 @@ if($data['delete_tags'] == 1)  $del_tags_permission = true;
                 </thead>
                 <tbody>
                     <?php
+
            $sql = 'SELECT * FROM tags ORDER BY id DESC';
            foreach ($dbh->query($sql) as $row) {
                     echo '<tr>';
@@ -59,7 +60,7 @@ if($data['delete_tags'] == 1)  $del_tags_permission = true;
                     echo '<td>'. $row['cardcode'] . '</td>';
             $sql1 = 'SELECT first_name FROM users WHERE id=?';
             $q = $dbh->prepare($sql1);
-            $q->execute(array($row['id']));
+            $q->execute(array($row['userid']));
             $data = $q->fetch(PDO::FETCH_ASSOC);
             echo '<td>'.$data['first_name'].'</td>';
                if ($row['status'] == 1){
