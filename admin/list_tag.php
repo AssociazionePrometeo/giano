@@ -19,8 +19,8 @@ $uid = $auth->getSessionUID($_COOKIE['ID']);
 include '_header.php';
 include '_menu.php';
 
-$ins_tags = false;
-$del_tags = false;
+$ins_tags_permission = false;
+$del_tags_permission = false;
 $dbh = Database::connect();
 $dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $sql = 'SELECT * FROM users a INNER JOIN type_user b on a.id = b.id LEFT JOIN permissions c on a.user_level = c.id WHERE a.id = ?';
@@ -73,7 +73,7 @@ if($data['delete_tags'] == 1)  $del_tags_permission = true;
                     echo '" href="update_tag.php?id='.$row['id'].'">Update</a>';
                     echo '&nbsp;';
                     echo '<button type="button" class="btn btn-danger"';
-                    if (!$del_tags_permission) echo ' disabled';
+                    if (!$del_tags_permission) {echo ' disabled';}
                     echo ' data-toggle="modal" data-target="#confirm-delete" data-href="delete_tag.php?id=' . $row['id'];
                     echo '">Delete</button></td>';
                     echo '</tr>';
