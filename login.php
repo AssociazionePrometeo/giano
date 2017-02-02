@@ -36,6 +36,15 @@ if (!isset($_SESSION["ID"])) {
                 </div>
             </div>
         </form>
+        <div>
+          <form class="form-horizontal" action="register.php" method="post">
+            <div class="form-group">
+                <div class="text-center">
+                    <a href="register.php">Register</a>
+                </div>
+            </div>
+          </form>
+        </div>
     </div>
 </div>
 
